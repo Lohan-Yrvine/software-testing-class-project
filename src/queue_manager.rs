@@ -1,71 +1,63 @@
 use std::collections::VecDeque;
-use std::io;
+use std::fs::{self, File};
+use std::io::Write;
+use std::path::Path;
 
-use crate::input_handler::select_ticket_priority;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone)]
+#[derive(Copy, Clone, PartialEq, Debug, Serialize, Deserialize)]
 pub enum TicketPriority {
     Normal,
     High,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct QueueTicket {
     code: u8,
     priority: TicketPriority,
+}
+
+impl QueueTicket {
+    pub fn get_code(&self) -> u8 {
+        self.code
+    }
+
+    pub fn get_priority(&self) -> TicketPriority {
+        self.priority
+    }
 }
 
 pub struct ClientQueueManager {
     priority_queue: VecDeque<QueueTicket>,
     normal_queue: VecDeque<QueueTicket>,
     next_ticket_number: u8,
-    total_tickets: u8,
+    file_path: &'static str,
 }
 
 impl ClientQueueManager {
-    pub fn new() -> Self {
+    pub fn new(queue_file_path: &'static str) -> Self {
         Self {
             priority_queue: VecDeque::with_capacity(u8::MAX as usize),
             normal_queue: VecDeque::with_capacity(u8::MAX as usize),
             next_ticket_number: 0,
-            total_tickets: 0,
+            file_path: queue_file_path,
         }
     }
 
-    // TODO: maybe find a way to gracefully terminate the program?
-    pub fn start_routine(&mut self) -> ! {
-        loop {
-            let ticket_priority;
-            match select_ticket_priority(io::stdin().lock(), io::stdout()) {
-                Some(priority) => ticket_priority = priority,
-                None => {
-                    println!("Tipo de atendimento INVÁLIDO. Por favor, insira novamente.\n");
-                    continue;
-                }
-            }
+    pub fn get_high_priority_queue(&self) -> Vec<u8> {
+        self.priority_queue
+            .iter()
+            .map(|ticket| ticket.code)
+            .collect()
+    }
 
-            let ticket_number = self.take_ticket(&ticket_priority);
-
-            match ticket_number {
-                Some(number) => {
-                    let people_ahead_amount = self.calculate_people_ahead_amount(&ticket_priority);
-
-                    println!(
-                        "Seu número de chamada para atendimento é {}.\n\
-                        Há um total de {} pessoas na sua frente.",
-                        number, people_ahead_amount);
-                }
-                None => {
-                    println!("Não há vagas no momento.");
-                }
-            }
-            println!("Por favor, aguarde.\n");
-        }
+    pub fn get_normal_priority_queue(&self) -> Vec<u8> {
+        self.normal_queue.iter().map(|ticket| ticket.code).collect()
     }
 
     // TODO: save in a file
-    fn take_ticket(&mut self, ticket_priority: &TicketPriority) -> Option<u8> {
-        if self.total_tickets == u8::MAX {
+    pub fn take_ticket(&mut self, ticket_priority: TicketPriority) -> Option<u8> {
+        if self.get_total_tickets_amount() == u8::MAX {
             return None;
         }
 
@@ -89,24 +81,43 @@ impl ClientQueueManager {
             }
         }
 
+        self.enqueue_in_file();
         Some(self.next_ticket_number)
     }
 
-    fn calculate_people_ahead_amount(&self, ticket_priority: &TicketPriority) -> usize {
+    fn get_total_tickets_amount(&self) -> u8 {
+        (self.priority_queue.len() + self.normal_queue.len()) as u8
+    }
+
+    fn enqueue_in_file(&mut self) {
+        if Path::new(self.file_path).exists() {
+            fs::remove_file(self.file_path).expect("Unable to delete queue file");
+        }
+
+        let serialized_queue = serde_json::to_string_pretty(&self.get_queue())
+            .expect("Unable to serialize client queue");
+
+        let mut file = File::create(self.file_path).expect("Unable to create queue file");
+        let _ = &file
+            .write_all(serialized_queue.as_bytes())
+            .expect("Unable to write serialized queue in file");
+    }
+
+    pub fn calculate_people_ahead_amount(&self, ticket_priority: TicketPriority) -> u8 {
         match ticket_priority {
-            TicketPriority::Normal => self.priority_queue.len() + self.normal_queue.len() - 1,
-            TicketPriority::High => self.priority_queue.len() - 1,
+            TicketPriority::Normal => self.get_total_tickets_amount() - 1,
+            TicketPriority::High => (self.priority_queue.len() - 1) as u8,
         }
     }
 
-    pub fn get_queue(&self) -> VecDeque<u8> {
+    pub fn get_queue(&self) -> Vec<u8> {
         // copies the codes from the priority queue
-        let mut result = self
+        let mut result: Vec<u8> = self
             .priority_queue
             .iter()
             .cloned()
             .map(|element| element.code)
-            .collect::<VecDeque<_>>();
+            .collect();
 
         // extends with the codes from the normal queue
         result.extend(
@@ -114,7 +125,7 @@ impl ClientQueueManager {
                 .iter()
                 .cloned()
                 .map(|element| element.code)
-                .collect::<VecDeque<_>>(),
+                .collect::<Vec<_>>(),
         );
 
         result
@@ -126,5 +137,11 @@ impl ClientQueueManager {
         }
 
         self.priority_queue.pop_front()
+    }
+}
+
+impl Drop for ClientQueueManager {
+    fn drop(&mut self) {
+        fs::remove_file(self.file_path).expect("Unable to delete queue file");
     }
 }
