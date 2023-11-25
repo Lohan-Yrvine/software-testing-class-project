@@ -10,7 +10,6 @@ impl ClientManager {
         println!("Modo Cliente começando...\n");
 
         let mut queue = ClientQueue::new(client_queue_file_path);
-        // TODO: maybe find a way to gracefully terminate the program?
         loop {
             let ticket_priority =
                 match InputHandler::select_ticket_priority(io::stdin().lock(), io::stdout()) {

@@ -35,12 +35,14 @@ pub struct ClientQueue {
 }
 
 impl ClientQueue {
-    pub fn new(queue_file_path: &'static str) -> Self {
+    pub fn new(file_path: &'static str) -> Self {
+        File::create(file_path).expect("Unable to create queue file");
+
         Self {
             priority_queue: VecDeque::with_capacity(u8::MAX as usize),
             normal_queue: VecDeque::with_capacity(u8::MAX as usize),
             next_ticket_number: 0,
-            file_path: queue_file_path,
+            file_path,
         }
     }
 
