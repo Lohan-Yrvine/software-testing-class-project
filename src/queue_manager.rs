@@ -5,13 +5,13 @@ use std::path::Path;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Copy, Clone, PartialEq, Debug, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum TicketPriority {
     Normal,
     High,
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct QueueTicket {
     code: u8,
     priority: TicketPriority,
@@ -97,15 +97,14 @@ impl ClientQueue {
             .expect("Unable to serialize client queue");
 
         let mut file = File::create(self.file_path).expect("Unable to create queue file");
-        let _ = &file
-            .write_all(serialized_queue.as_bytes())
+        file.write_all(serialized_queue.as_bytes())
             .expect("Unable to write serialized queue in file");
     }
 
-    pub fn calculate_people_ahead_amount(&self, ticket_priority: TicketPriority) -> u8 {
+    pub fn get_amount_people_ahead(&self, ticket_priority: TicketPriority) -> u8 {
         match ticket_priority {
             TicketPriority::Normal => self.get_total_tickets_amount() - 1,
-            TicketPriority::High => (self.priority_queue.len() - 1) as u8,
+            TicketPriority::High => self.priority_queue.len() as u8 - 1,
         }
     }
 
@@ -141,6 +140,8 @@ impl ClientQueue {
 
 impl Drop for ClientQueue {
     fn drop(&mut self) {
-        fs::remove_file(self.file_path).expect("Unable to delete queue file");
+        if Path::new(self.file_path).exists() {
+            fs::remove_file(self.file_path).expect("Unable to delete queue file");
+        }
     }
 }

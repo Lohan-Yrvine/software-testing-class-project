@@ -32,14 +32,15 @@ impl InputHandler {
         reader
             .read_line(&mut buff)
             .expect("Unable to read operation mode selected");
+        buff = buff.trim().to_string();
 
         write!(writer, "\n").unwrap();
 
-        if buff == "1\n" {
+        if buff == "1" {
             return Some(OperationMode::Client);
-        } else if buff == "2\n" {
+        } else if buff == "2" {
             return Some(OperationMode::Service);
-        } else if buff == "3\n" {
+        } else if buff == "3" {
             return Some(OperationMode::Dentist);
         }
 
@@ -65,12 +66,13 @@ impl InputHandler {
         reader
             .read_line(&mut buff)
             .expect("Unable to read ticket priority select");
+        buff = buff.trim().to_string();
 
         write!(writer, "\n").unwrap();
 
-        if buff == "1\n" {
+        if buff == "1" {
             return Some(TicketPriority::High);
-        } else if buff == "2\n" {
+        } else if buff == "2" {
             return Some(TicketPriority::Normal);
         }
 
