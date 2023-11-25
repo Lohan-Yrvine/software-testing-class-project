@@ -1,7 +1,7 @@
 use std::io;
 
 use crate::input_handler::InputHandler;
-use crate::queue_manager::ClientQueue;
+use crate::queues_collection::ClientQueue;
 
 pub struct ClientManager;
 

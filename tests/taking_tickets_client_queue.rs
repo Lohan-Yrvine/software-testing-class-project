@@ -5,7 +5,7 @@ use std::io::BufReader;
 use rand;
 use serde_json;
 
-use sos_dentes::queue_manager::{ClientQueue, TicketPriority};
+use sos_dentes::queues_collection::{ClientQueue, TicketPriority};
 
 #[inline]
 fn get_test_file_content(path: &str) -> Vec<u8> {

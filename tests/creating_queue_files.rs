@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use sos_dentes::queue_manager::ClientQueue;
+use sos_dentes::queues_collection::ClientQueue;
 
 #[test]
 fn creating_client_queue_file() {

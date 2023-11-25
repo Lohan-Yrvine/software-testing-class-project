@@ -1,6 +1,6 @@
 use std::io;
 
-use crate::queue_manager::TicketPriority;
+use crate::queues_collection::TicketPriority;
 
 #[derive(Debug)]
 pub enum OperationMode {

@@ -1,5 +1,5 @@
 use sos_dentes::input_handler::{InputHandler, OperationMode};
-use sos_dentes::queue_manager::TicketPriority;
+use sos_dentes::queues_collection::TicketPriority;
 
 #[test]
 fn client_mode_selection() {
