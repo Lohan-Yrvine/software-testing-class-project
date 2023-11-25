@@ -27,14 +27,14 @@ impl QueueTicket {
     }
 }
 
-pub struct ClientQueue {
+pub struct PacientQueue {
     priority_queue: VecDeque<QueueTicket>,
     normal_queue: VecDeque<QueueTicket>,
     next_ticket_number: u8,
     file_path: &'static str,
 }
 
-impl ClientQueue {
+impl PacientQueue {
     pub fn new(file_path: &'static str) -> Self {
         File::create(file_path).expect("Unable to create queue file");
 
@@ -70,7 +70,7 @@ impl ClientQueue {
 
         let ticket = QueueTicket {
             code: self.next_ticket_number,
-            priority: ticket_priority.clone(),
+            priority: ticket_priority,
         };
 
         match ticket.priority {
@@ -96,7 +96,7 @@ impl ClientQueue {
         }
 
         let serialized_queue = serde_json::to_string_pretty(&self.get_queue())
-            .expect("Unable to serialize client queue");
+            .expect("Unable to serialize pacient queue");
 
         let mut file = File::create(self.file_path).expect("Unable to create queue file");
         file.write_all(serialized_queue.as_bytes())
@@ -140,7 +140,7 @@ impl ClientQueue {
     }
 }
 
-impl Drop for ClientQueue {
+impl Drop for PacientQueue {
     fn drop(&mut self) {
         if Path::new(self.file_path).exists() {
             fs::remove_file(self.file_path).expect("Unable to delete queue file");

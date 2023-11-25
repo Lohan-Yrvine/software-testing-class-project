@@ -2,11 +2,11 @@ use sos_dentes::input_handler::{InputHandler, OperationMode};
 use sos_dentes::queues_collection::TicketPriority;
 
 #[test]
-fn client_mode_selection() {
+fn pacient_mode_selection() {
     let input_mock = "1\n".as_bytes();
     let output_mock = Vec::with_capacity(0);
     match InputHandler::select_operation_mode(input_mock, output_mock) {
-        Some(OperationMode::Client) => assert!(true),
+        Some(OperationMode::Pacient) => assert!(true),
         _ => assert!(false),
     }
 }

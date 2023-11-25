@@ -4,7 +4,7 @@ use std::io::BufReader;
 use rand;
 use serde_json;
 
-use sos_dentes::queues_collection::{ClientQueue, TicketPriority};
+use sos_dentes::queues_collection::{PacientQueue, TicketPriority};
 
 #[inline]
 fn get_test_file_content(path: &str) -> Vec<u8> {
@@ -16,7 +16,7 @@ fn get_test_file_content(path: &str) -> Vec<u8> {
 #[test]
 fn taking_normal_priority_tickets_within_bounds() {
     let file_path = "taking_normal_priority_tickets_within_bounds.json";
-    let mut queue = ClientQueue::new(file_path);
+    let mut queue = PacientQueue::new(file_path);
     let repetitions = 10;
 
     for _ in 0..repetitions {
@@ -35,10 +35,9 @@ fn taking_normal_priority_tickets_within_bounds() {
 #[test]
 fn taking_normal_priority_tickets_out_of_bounds() {
     let file_path = "taking_normal_priority_tickets_out_of_bounds.json";
-    let mut queue = ClientQueue::new(file_path);
-    let repetitions = 300;
+    let mut queue = PacientQueue::new(file_path);
 
-    for _ in 0..repetitions {
+    for _ in 0..300 {
         queue.take_ticket(TicketPriority::Normal);
     }
 
@@ -54,7 +53,7 @@ fn taking_normal_priority_tickets_out_of_bounds() {
 #[test]
 fn taking_high_priority_tickets_within_bounds() {
     let file_path = "taking_high_priority_tickets_within_bounds.json";
-    let mut queue = ClientQueue::new(file_path);
+    let mut queue = PacientQueue::new(file_path);
     let repetitions = 10;
 
     for _ in 0..repetitions {
@@ -73,10 +72,9 @@ fn taking_high_priority_tickets_within_bounds() {
 #[test]
 fn taking_high_priority_tickets_out_of_bounds() {
     let file_path = "taking_high_priority_tickets_out_of_bounds.json";
-    let mut queue = ClientQueue::new(file_path);
-    let repetitions = 300;
+    let mut queue = PacientQueue::new(file_path);
 
-    for _ in 0..repetitions {
+    for _ in 0..300 {
         queue.take_ticket(TicketPriority::High);
     }
 
@@ -92,7 +90,7 @@ fn taking_high_priority_tickets_out_of_bounds() {
 #[test]
 fn taking_arbitrary_priority_tickets_within_bounds() {
     let file_path = "taking_arbitrary_priority_tickets_within_bounds.json";
-    let mut queue = ClientQueue::new(file_path);
+    let mut queue = PacientQueue::new(file_path);
 
     let ticket1 = queue.take_ticket(TicketPriority::Normal).unwrap();
     let ticket2 = queue.take_ticket(TicketPriority::Normal).unwrap();
@@ -124,12 +122,11 @@ fn taking_arbitrary_priority_tickets_within_bounds() {
 #[test]
 fn taking_arbitrary_priority_tickets_out_of_bounds() {
     let file_path = "taking_arbitrary_priority_tickets_out_of_bounds.json";
-    let mut queue = ClientQueue::new(file_path);
+    let mut queue = PacientQueue::new(file_path);
     let mut expected_high_priority_queue = vec![];
     let mut expected_normal_priority_queue = vec![];
 
-    // TODO: maybe find a better way to code this for loop?
-    for _ in 0..u8::MAX as usize + 1 {
+    for _ in 0..300 {
         let priority = if rand::random() {
             TicketPriority::Normal
         } else {

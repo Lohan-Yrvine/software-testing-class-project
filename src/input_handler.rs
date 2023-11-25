@@ -4,7 +4,7 @@ use crate::queues_collection::TicketPriority;
 
 #[derive(Debug)]
 pub enum OperationMode {
-    Client,
+    Pacient,
     Service,
     Dentist,
 }
@@ -19,7 +19,7 @@ impl InputHandler {
     {
         write!(
             writer,
-            "[1] Cliente\n\
+            "[1] Paciente\n\
             [2] Atendente\n\
             [3] Dentista\n\
             \n\
@@ -37,7 +37,7 @@ impl InputHandler {
         write!(writer, "\n").unwrap();
 
         if buff == "1" {
-            return Some(OperationMode::Client);
+            return Some(OperationMode::Pacient);
         } else if buff == "2" {
             return Some(OperationMode::Service);
         } else if buff == "3" {

@@ -1,15 +1,15 @@
 use std::io;
 
 use crate::input_handler::InputHandler;
-use crate::queues_collection::ClientQueue;
+use crate::queues_collection::PacientQueue;
 
-pub struct ClientManager;
+pub struct PacientManager;
 
-impl ClientManager {
-    pub fn start(client_queue_file_path: &'static str) {
-        println!("Modo Cliente começando...\n");
+impl PacientManager {
+    pub fn start(queue_file_path: &'static str) {
+        println!("Modo 'Paciente' começando...\n");
 
-        let mut queue = ClientQueue::new(client_queue_file_path);
+        let mut queue = PacientQueue::new(queue_file_path);
         loop {
             let ticket_priority =
                 match InputHandler::select_ticket_priority(io::stdin().lock(), io::stdout()) {
