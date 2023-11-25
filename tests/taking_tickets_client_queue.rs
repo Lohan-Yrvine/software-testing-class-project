@@ -5,8 +5,9 @@ use std::io::BufReader;
 use rand;
 use serde_json;
 
-use sos_dentes::queue_manager::{ClientQueueManager, TicketPriority};
+use sos_dentes::queue_manager::{ClientQueue, TicketPriority};
 
+#[inline]
 fn get_test_file_content(path: &str) -> Vec<u8> {
     let file = File::open(path).expect("Unable to open file");
     let reader = BufReader::new(file);
@@ -16,7 +17,7 @@ fn get_test_file_content(path: &str) -> Vec<u8> {
 #[test]
 fn taking_normal_priority_tickets_within_bounds() {
     let test_file_path = "taking_normal_priority_tickets_within_bounds.json";
-    let mut queue = ClientQueueManager::new(test_file_path);
+    let mut queue = ClientQueue::new(test_file_path);
     let repetitions = 10;
 
     let expected_queue: Vec<u8> = (0..repetitions)
@@ -34,7 +35,7 @@ fn taking_normal_priority_tickets_within_bounds() {
 #[test]
 fn taking_normal_priority_tickets_out_of_bounds() {
     let test_file_path = "taking_normal_priority_tickets_out_of_bounds.json";
-    let mut queue = ClientQueueManager::new(test_file_path);
+    let mut queue = ClientQueue::new(test_file_path);
 
     let expected_queue: Vec<u8> = (0..u8::MAX as usize + 1)
         .filter_map(|_| queue.take_ticket(TicketPriority::Normal))
@@ -51,7 +52,7 @@ fn taking_normal_priority_tickets_out_of_bounds() {
 #[test]
 fn taking_high_priority_tickets_within_bounds() {
     let test_file_path = "taking_high_priority_tickets_within_bounds.json";
-    let mut queue = ClientQueueManager::new(test_file_path);
+    let mut queue = ClientQueue::new(test_file_path);
     let repetitions = 10;
 
     let expected_queue: Vec<u8> = (0..10)
@@ -69,7 +70,7 @@ fn taking_high_priority_tickets_within_bounds() {
 #[test]
 fn taking_high_priority_tickets_out_of_bounds() {
     let test_file_path = "taking_high_priority_tickets_out_of_bounds.json";
-    let mut queue = ClientQueueManager::new(test_file_path);
+    let mut queue = ClientQueue::new(test_file_path);
 
     let expected_queue: Vec<u8> = (0..u8::MAX as usize + 1)
         .filter_map(|_| queue.take_ticket(TicketPriority::High))
@@ -86,7 +87,7 @@ fn taking_high_priority_tickets_out_of_bounds() {
 #[test]
 fn taking_arbitrary_priority_tickets_within_bounds() {
     let test_file_path = "taking_arbitrary_priority_tickets_within_bounds.json";
-    let mut queue = ClientQueueManager::new(test_file_path);
+    let mut queue = ClientQueue::new(test_file_path);
 
     let ticket1 = queue.take_ticket(TicketPriority::Normal).unwrap();
     let ticket2 = queue.take_ticket(TicketPriority::Normal).unwrap();
@@ -107,7 +108,7 @@ fn taking_arbitrary_priority_tickets_within_bounds() {
 #[test]
 fn taking_arbitrary_priority_tickets_out_of_bounds() {
     let test_file_path = "taking_arbitrary_priority_tickets_out_of_bounds.json";
-    let mut queue = ClientQueueManager::new(test_file_path);
+    let mut queue = ClientQueue::new(test_file_path);
     let mut expected_high_priority_queue = vec![];
     let mut expected_normal_priority_queue = vec![];
 

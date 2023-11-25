@@ -27,14 +27,14 @@ impl QueueTicket {
     }
 }
 
-pub struct ClientQueueManager {
+pub struct ClientQueue {
     priority_queue: VecDeque<QueueTicket>,
     normal_queue: VecDeque<QueueTicket>,
     next_ticket_number: u8,
     file_path: &'static str,
 }
 
-impl ClientQueueManager {
+impl ClientQueue {
     pub fn new(queue_file_path: &'static str) -> Self {
         Self {
             priority_queue: VecDeque::with_capacity(u8::MAX as usize),
@@ -55,7 +55,6 @@ impl ClientQueueManager {
         self.normal_queue.iter().map(|ticket| ticket.code).collect()
     }
 
-    // TODO: save in a file
     pub fn take_ticket(&mut self, ticket_priority: TicketPriority) -> Option<u8> {
         if self.get_total_tickets_amount() == u8::MAX {
             return None;
@@ -140,7 +139,7 @@ impl ClientQueueManager {
     }
 }
 
-impl Drop for ClientQueueManager {
+impl Drop for ClientQueue {
     fn drop(&mut self) {
         fs::remove_file(self.file_path).expect("Unable to delete queue file");
     }
