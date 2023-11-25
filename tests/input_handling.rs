@@ -33,7 +33,7 @@ fn dentist_mode_selection() {
 
 #[test]
 fn wrong_mode_selection() {
-    let input_mocks: Vec<&[u8]> = vec![b"4\n", b"5\n", b"\n", b"error\n", b"wrong\n"];
+    let input_mocks: Vec<&[u8]> = vec![b"4\n", b"5  \n", b"   6\n", b"\n", b"error\n", b"wrong\n"];
     for input in input_mocks.into_iter() {
         match InputHandler::select_operation_mode(input, Vec::with_capacity(0)) {
             None => assert!(true),
@@ -64,7 +64,7 @@ fn high_priority_ticket_selection() {
 
 #[test]
 fn wrong_priority_ticket_selection() {
-    let input_mocks: Vec<&[u8]> = vec![b"4\n", b"5\n", b"\n", b"error\n", b"wrong\n"];
+    let input_mocks: Vec<&[u8]> = vec![b"4\n", b"5  \n", b"   6\n", b"\n", b"error\n", b"wrong\n"];
     for input in input_mocks.into_iter() {
         match InputHandler::select_operation_mode(input, Vec::with_capacity(0)) {
             None => assert!(true),
