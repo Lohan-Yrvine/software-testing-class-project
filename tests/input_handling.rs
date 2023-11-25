@@ -12,11 +12,11 @@ fn pacient_mode_selection() {
 }
 
 #[test]
-fn service_mode_selection() {
+fn receptionist_mode_selection() {
     let input_mock = "2\n".as_bytes();
     let output_mock = Vec::with_capacity(0);
     match InputHandler::select_operation_mode(input_mock, output_mock) {
-        Some(OperationMode::Service) => assert!(true),
+        Some(OperationMode::Receptionist) => assert!(true),
         _ => assert!(false),
     }
 }

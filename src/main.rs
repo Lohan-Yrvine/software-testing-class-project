@@ -20,7 +20,7 @@ fn main() {
     let op_mode = InputHandler::select_operation_mode(io::stdin().lock(), io::stdout());
     match op_mode {
         Some(OperationMode::Pacient) => PacientManager::start(PACIENT_QUEUE_FILE_PATH),
-        Some(OperationMode::Service) => todo!(),
+        Some(OperationMode::Receptionist) => todo!(),
         Some(OperationMode::Dentist) => todo!(),
         None => println!("Modo INVÁLIDO. Por favor, insira novamente.\n"),
     }
