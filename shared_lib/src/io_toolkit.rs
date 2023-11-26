@@ -1,39 +1,37 @@
-use std::io;
+use std::fs::{self, File};
+use std::io::{BufReader, Write};
+use std::path::Path;
 
-use crate::priority_queue::TicketPriority;
+use anyhow::Result;
+use serde::{de, Serialize};
+use serde_json;
 
-pub struct InputHandler;
+pub struct IOToolkit;
 
-impl InputHandler {
-    pub fn select_ticket_priority<R, W>(mut reader: R, mut writer: W) -> Option<TicketPriority>
+impl IOToolkit {
+    pub fn save_as_json<T>(path: &'static str, buff: &Vec<T>) -> Result<()>
     where
-        R: io::BufRead,
-        W: io::Write,
+        T: Sized + Serialize,
     {
-        write!(
-            writer,
-            "[1] Prioritário\n\
-            [2] Normal\n\
-            \n\
-            Insira o tipo de atendimento para receber seu número de chamada: "
-        )
-        .expect("Unable to display available ticket priorities message");
-        writer.flush().unwrap();
-
-        let mut buff = String::new();
-        reader
-            .read_line(&mut buff)
-            .expect("Unable to read ticket priority select");
-        buff = buff.trim().to_string();
-
-        writeln!(writer).unwrap();
-
-        if buff == "1" {
-            return Some(TicketPriority::High);
-        } else if buff == "2" {
-            return Some(TicketPriority::Normal);
+        if Path::new(path).exists() {
+            fs::remove_file(path)?;
         }
 
-        None
+        let serialized = serde_json::to_string_pretty(buff)?;
+        let mut file = File::create(path)?;
+        file.write_all(serialized.as_bytes())?;
+
+        Ok(())
+    }
+
+    pub fn read_from_json<T>(path: &'static str) -> Result<Vec<T>>
+    where
+        T: de::DeserializeOwned,
+    {
+        let file = File::open(path)?;
+        let reader = BufReader::new(file);
+        let deserialized = serde_json::from_reader(reader)?;
+
+        Ok(deserialized)
     }
 }

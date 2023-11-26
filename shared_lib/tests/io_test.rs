@@ -1,33 +1,43 @@
-use shared_lib::io_toolkit::InputHandler;
-use shared_lib::priority_queue::TicketPriority;
+use std::fs::{self, File};
+use std::io::{BufReader, Write};
+
+use anyhow::Result;
+use serde_json;
+
+use shared_lib::IOToolkit;
 
 #[test]
-fn normal_priority_ticket_selection() {
-    let input_mock = "2\n".as_bytes();
-    let output_mock = Vec::with_capacity(0);
-    match InputHandler::select_ticket_priority(input_mock, output_mock) {
-        Some(TicketPriority::Normal) => assert!(true),
-        _ => assert!(false),
-    }
-}
+fn save_file_as_json_test() {
+    let path = "save_file_as_json_test.json";
+    let buff = vec![1, 2, 3, 4, 5];
+    match IOToolkit::save_as_json(path, &buff) {
+        Ok(_) => {
+            let file = File::open(path).unwrap();
+            let reader = BufReader::new(file);
+            let deserialized: Vec<i32> = serde_json::from_reader(reader).unwrap();
 
-#[test]
-fn high_priority_ticket_selection() {
-    let input_mock = "1\n".as_bytes();
-    let output_mock = Vec::with_capacity(0);
-    match InputHandler::select_ticket_priority(input_mock, output_mock) {
-        Some(TicketPriority::High) => assert!(true),
-        _ => assert!(false),
-    }
-}
+            assert_eq!(deserialized, buff);
 
-#[test]
-fn wrong_priority_ticket_selection() {
-    let input_mocks: Vec<&[u8]> = vec![b"4\n", b"5  \n", b"   6\n", b"\n", b"error\n", b"wrong\n"];
-    for input in input_mocks.into_iter() {
-        match InputHandler::select_ticket_priority(input, Vec::with_capacity(0)) {
-            None => assert!(true),
-            _ => assert!(false),
+            fs::remove_file(path).unwrap();
         }
+        Err(_) => assert!(false),
+    }
+}
+
+#[test]
+fn read_json_file_test() {
+    let path = "read_json_file_test.json";
+    let buff = vec![1, 2, 3, 4, 5];
+    let serialized = serde_json::to_string_pretty(&buff).unwrap();
+    let mut file = File::create(path).unwrap();
+    file.write_all(serialized.as_bytes()).unwrap();
+
+    match IOToolkit::read_from_json(path) as Result<Vec<i32>> {
+        Ok(result) => {
+            assert_eq!(result, buff);
+
+            fs::remove_file(path).unwrap();
+        }
+        Err(_) => assert!(false),
     }
 }
