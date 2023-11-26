@@ -5,7 +5,7 @@ use std::path::Path;
 use sos_dentes::input_handler::{InputHandler, OperationMode};
 use sos_dentes::pacient::PacientManager;
 
-const PACIENT_QUEUE_FILE_PATH: &'static str = "pacient_queue.json";
+const PACIENT_QUEUE_FILE_PATH: &str = "pacient_queue.json";
 
 fn main() {
     ctrlc::set_handler(move || {

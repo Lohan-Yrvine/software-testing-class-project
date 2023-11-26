@@ -34,7 +34,7 @@ impl InputHandler {
             .expect("Unable to read operation mode selected");
         buff = buff.trim().to_string();
 
-        write!(writer, "\n").unwrap();
+        writeln!(writer).unwrap();
 
         if buff == "1" {
             return Some(OperationMode::Pacient);
@@ -68,7 +68,7 @@ impl InputHandler {
             .expect("Unable to read ticket priority select");
         buff = buff.trim().to_string();
 
-        write!(writer, "\n").unwrap();
+        writeln!(writer).unwrap();
 
         if buff == "1" {
             return Some(TicketPriority::High);
