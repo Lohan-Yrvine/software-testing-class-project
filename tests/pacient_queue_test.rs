@@ -5,7 +5,7 @@ use std::path::Path;
 use rand;
 use serde_json;
 
-use sos_dentes::queues_collection::{PacientQueue, TicketPriority};
+use sos_dentes::queues_collection::{PacientQueue, QueueTicket, TicketPriority};
 
 #[test]
 fn pacient_queue_file_creation() {
@@ -23,7 +23,7 @@ fn pacient_queue_file_deletion() {
 }
 
 #[inline]
-fn parse_queue_file_content(path: &str) -> Vec<u8> {
+fn parse_queue_file_content(path: &str) -> Vec<QueueTicket> {
     let file = File::open(path).expect("Unable to open file");
     let reader = BufReader::new(file);
     serde_json::from_reader(reader).expect("Unable to read from file")
@@ -41,10 +41,15 @@ fn taking_normal_priority_tickets_within_bounds() {
 
     let expected_queue: Vec<u8> = (1..=repetitions).collect();
 
-    let file_output = parse_queue_file_content(file_path);
+    let expected_file_output: Vec<QueueTicket> = (1..=repetitions)
+        .into_iter()
+        .map(|code| QueueTicket::new(code, TicketPriority::Normal))
+        .collect();
+
+    let actual_file_output = parse_queue_file_content(file_path);
 
     assert_eq!(queue.get_normal_priority_queue(), expected_queue);
-    assert_eq!(file_output, expected_queue);
+    assert_eq!(actual_file_output, expected_file_output);
     assert!(queue.get_high_priority_queue().is_empty());
 }
 
@@ -59,10 +64,15 @@ fn taking_normal_priority_tickets_out_of_bounds() {
 
     let expected_queue: Vec<u8> = (1..=255).collect();
 
-    let file_output = parse_queue_file_content(file_path);
+    let expected_file_output: Vec<QueueTicket> = (1..=255)
+        .into_iter()
+        .map(|code| QueueTicket::new(code, TicketPriority::Normal))
+        .collect();
+
+    let actual_file_output = parse_queue_file_content(file_path);
 
     assert_eq!(queue.get_normal_priority_queue(), expected_queue);
-    assert_eq!(file_output, expected_queue);
+    assert_eq!(actual_file_output, expected_file_output);
     assert!(queue.get_high_priority_queue().is_empty());
 }
 
@@ -78,10 +88,15 @@ fn taking_high_priority_tickets_within_bounds() {
 
     let expect_queue: Vec<u8> = (1..=repetitions).collect();
 
-    let file_output = parse_queue_file_content(file_path);
+    let expected_file_output: Vec<QueueTicket> = (1..=repetitions)
+        .into_iter()
+        .map(|code| QueueTicket::new(code, TicketPriority::High))
+        .collect();
+
+    let actual_file_output = parse_queue_file_content(file_path);
 
     assert_eq!(queue.get_high_priority_queue(), expect_queue);
-    assert_eq!(file_output, expect_queue);
+    assert_eq!(actual_file_output, expected_file_output);
     assert!(queue.get_normal_priority_queue().is_empty());
 }
 
@@ -96,10 +111,15 @@ fn taking_high_priority_tickets_out_of_bounds() {
 
     let expected_queue: Vec<u8> = (1..=255).collect();
 
-    let file_output = parse_queue_file_content(file_path);
+    let expected_file_output: Vec<QueueTicket> = (1..=255)
+        .into_iter()
+        .map(|code| QueueTicket::new(code, TicketPriority::High))
+        .collect();
+
+    let actual_file_output = parse_queue_file_content(file_path);
 
     assert_eq!(queue.get_high_priority_queue(), expected_queue);
-    assert_eq!(file_output, expected_queue);
+    assert_eq!(actual_file_output, expected_file_output);
     assert!(queue.get_normal_priority_queue().is_empty());
 }
 
@@ -117,8 +137,17 @@ fn taking_arbitrary_priority_tickets_within_bounds() {
     let mut expected_high_priority_queue = vec![ticket3, ticket5];
     let expected_normal_priority_queue = vec![ticket1, ticket2, ticket4];
 
-    let file_output = parse_queue_file_content(file_path);
+    let expected_file_output = vec![
+        QueueTicket::new(3, TicketPriority::High),
+        QueueTicket::new(5, TicketPriority::High),
+        QueueTicket::new(1, TicketPriority::Normal),
+        QueueTicket::new(2, TicketPriority::Normal),
+        QueueTicket::new(4, TicketPriority::Normal),
+    ];
 
+    let actual_file_output = parse_queue_file_content(file_path);
+
+    assert_eq!(actual_file_output, expected_file_output);
     assert_eq!(
         queue.get_high_priority_queue(),
         expected_high_priority_queue
@@ -132,7 +161,6 @@ fn taking_arbitrary_priority_tickets_within_bounds() {
     let expected_queue = expected_high_priority_queue;
 
     assert_eq!(queue.get_queue(), expected_queue);
-    assert_eq!(file_output, expected_queue);
 }
 
 #[test]
@@ -158,8 +186,20 @@ fn taking_arbitrary_priority_tickets_out_of_bounds() {
         }
     }
 
-    let file_output = parse_queue_file_content(file_path);
+    let mut expected_file_output: Vec<QueueTicket> = expected_high_priority_queue
+        .iter()
+        .map(|&code| QueueTicket::new(code, TicketPriority::High))
+        .collect();
+    expected_file_output.extend(
+        expected_normal_priority_queue
+            .iter()
+            .map(|&code| QueueTicket::new(code, TicketPriority::Normal))
+            .collect::<Vec<_>>(),
+    );
 
+    let actual_file_output = parse_queue_file_content(file_path);
+
+    assert_eq!(actual_file_output, expected_file_output);
     assert_eq!(
         queue.get_normal_priority_queue(),
         expected_normal_priority_queue
@@ -173,5 +213,4 @@ fn taking_arbitrary_priority_tickets_out_of_bounds() {
     let expected_queue = expected_high_priority_queue;
 
     assert_eq!(queue.get_queue(), expected_queue);
-    assert_eq!(file_output, expected_queue);
 }
