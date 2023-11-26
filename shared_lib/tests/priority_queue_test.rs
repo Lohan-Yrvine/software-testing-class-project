@@ -5,12 +5,12 @@ use std::path::Path;
 use rand;
 use serde_json;
 
-use sos_dentes::queues_collection::{PacientQueue, QueueTicket, TicketPriority};
+use shared_lib::priority_queue::{PriorityQueue, QueueTicket, TicketPriority};
 
 #[test]
 fn pacient_queue_file_creation() {
     let file_path = "creating_pacient_queue_file.json";
-    let _queue = PacientQueue::new(file_path);
+    let _queue = PriorityQueue::new(file_path);
     assert!(Path::new(file_path).exists());
 }
 
@@ -18,7 +18,7 @@ fn pacient_queue_file_creation() {
 fn pacient_queue_file_deletion() {
     let file_path = "removing_pacient_queue_file.json";
     // queue already drops here
-    let _ = PacientQueue::new(file_path);
+    let _ = PriorityQueue::new(file_path);
     assert!(!Path::new(file_path).exists());
 }
 
@@ -32,7 +32,7 @@ fn parse_queue_file_content(path: &str) -> Vec<QueueTicket> {
 #[test]
 fn taking_normal_priority_tickets_within_bounds() {
     let file_path = "taking_normal_priority_tickets_within_bounds.json";
-    let mut queue = PacientQueue::new(file_path);
+    let mut queue = PriorityQueue::new(file_path);
     let repetitions = 10;
 
     for _ in 0..repetitions {
@@ -56,7 +56,7 @@ fn taking_normal_priority_tickets_within_bounds() {
 #[test]
 fn taking_normal_priority_tickets_out_of_bounds() {
     let file_path = "taking_normal_priority_tickets_out_of_bounds.json";
-    let mut queue = PacientQueue::new(file_path);
+    let mut queue = PriorityQueue::new(file_path);
 
     for _ in 0..300 {
         queue.take_ticket(TicketPriority::Normal);
@@ -79,7 +79,7 @@ fn taking_normal_priority_tickets_out_of_bounds() {
 #[test]
 fn taking_high_priority_tickets_within_bounds() {
     let file_path = "taking_high_priority_tickets_within_bounds.json";
-    let mut queue = PacientQueue::new(file_path);
+    let mut queue = PriorityQueue::new(file_path);
     let repetitions = 10;
 
     for _ in 0..repetitions {
@@ -103,7 +103,7 @@ fn taking_high_priority_tickets_within_bounds() {
 #[test]
 fn taking_high_priority_tickets_out_of_bounds() {
     let file_path = "taking_high_priority_tickets_out_of_bounds.json";
-    let mut queue = PacientQueue::new(file_path);
+    let mut queue = PriorityQueue::new(file_path);
 
     for _ in 0..300 {
         queue.take_ticket(TicketPriority::High);
@@ -126,7 +126,7 @@ fn taking_high_priority_tickets_out_of_bounds() {
 #[test]
 fn taking_arbitrary_priority_tickets_within_bounds() {
     let file_path = "taking_arbitrary_priority_tickets_within_bounds.json";
-    let mut queue = PacientQueue::new(file_path);
+    let mut queue = PriorityQueue::new(file_path);
 
     let ticket1 = queue.take_ticket(TicketPriority::Normal).unwrap();
     let ticket2 = queue.take_ticket(TicketPriority::Normal).unwrap();
@@ -166,7 +166,7 @@ fn taking_arbitrary_priority_tickets_within_bounds() {
 #[test]
 fn taking_arbitrary_priority_tickets_out_of_bounds() {
     let file_path = "taking_arbitrary_priority_tickets_out_of_bounds.json";
-    let mut queue = PacientQueue::new(file_path);
+    let mut queue = PriorityQueue::new(file_path);
     let mut expected_high_priority_queue = vec![];
     let mut expected_normal_priority_queue = vec![];
 

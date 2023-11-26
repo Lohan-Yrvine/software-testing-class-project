@@ -1,7 +1,7 @@
 use std::io;
 
-use crate::input_handler::InputHandler;
-use crate::queues_collection::PacientQueue;
+use shared_lib::io_toolkit::InputHandler;
+use shared_lib::priority_queue::PriorityQueue;
 
 pub struct PacientManager;
 
@@ -9,7 +9,7 @@ impl PacientManager {
     pub fn start(queue_file_path: &'static str) {
         println!("Modo 'Paciente' começando...\n");
 
-        let mut queue = PacientQueue::new(queue_file_path);
+        let mut queue = PriorityQueue::new(queue_file_path);
         loop {
             let ticket_priority =
                 match InputHandler::select_ticket_priority(io::stdin().lock(), io::stdout()) {

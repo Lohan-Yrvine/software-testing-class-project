@@ -31,14 +31,14 @@ impl QueueTicket {
     }
 }
 
-pub struct PacientQueue {
+pub struct PriorityQueue {
     high_priority_queue: VecDeque<QueueTicket>,
     normal_priority_queue: VecDeque<QueueTicket>,
     next_ticket_number: u8,
     file_path: &'static str,
 }
 
-impl PacientQueue {
+impl PriorityQueue {
     pub fn new(file_path: &'static str) -> Self {
         File::create(file_path).expect("Unable to create pacient queue file");
 
@@ -141,7 +141,7 @@ impl PacientQueue {
     }
 }
 
-impl Drop for PacientQueue {
+impl Drop for PriorityQueue {
     fn drop(&mut self) {
         if Path::new(self.file_path).exists() {
             fs::remove_file(self.file_path).expect("Unable to delete pacient queue file");

@@ -1,4 +1,7 @@
-/.idea
-/.vscode
+.idea/
+.vscode/
 
-/target
+target/
+*/target/
+
+shared_lib/Cargo.lock
