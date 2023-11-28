@@ -1,5 +1,8 @@
 # TODO
 
+Obs.: marcar como completo apenas quando os testes estiverem implementados e o
+código estiver passando neles como esperado.
+
 - [ ] Fila por ordem de chegada de pacientes
 - [ ] Atendimento dos pacientes
     - [ ] Chamar paciente
