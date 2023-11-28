@@ -133,6 +133,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "receptionist"
+version = "0.1.0"
+dependencies = [
+ "dotenv",
+ "shared_lib",
+]
+
+[[package]]
 name = "ryu"
 version = "1.0.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"

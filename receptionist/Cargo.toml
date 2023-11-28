@@ -1,0 +1,8 @@
+[package]
+name = "receptionist"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+shared_lib = { path = "../shared_lib" }
+dotenv = "0.15"
