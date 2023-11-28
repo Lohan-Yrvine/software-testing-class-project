@@ -3,6 +3,10 @@ name = "receptionist"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+# disable since this project do NOT have documentation
+doctest = false
+
 [dependencies]
-shared_lib = { path = "../shared_lib" }
+common_lib = { path = "../common_lib" }
 dotenv = "0.15"

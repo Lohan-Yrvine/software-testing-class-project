@@ -1,6 +1,6 @@
 use rand;
 
-use shared_lib::priority_queue::{PriorityQueue, PriorityQueueTicket, TicketPriority};
+use common_lib::priority_queue::{PriorityQueue, PriorityQueueTicket, TicketPriority};
 
 #[test]
 fn taking_normal_priority_tickets_within_bounds() {

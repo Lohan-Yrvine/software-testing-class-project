@@ -1,8 +1,8 @@
 use std::env;
 
+use common_lib::io_handler::{DefaultIOHandler, IOHandler};
+use common_lib::priority_queue::PriorityQueue;
 use dotenv::dotenv;
-use shared_lib::io_handler::{DefaultIOHandler, IOHandler};
-use shared_lib::priority_queue::PriorityQueue;
 
 use receptionist::service_manager::ServiceManager;
 

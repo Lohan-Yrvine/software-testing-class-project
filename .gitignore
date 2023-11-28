@@ -4,4 +4,4 @@
 target/
 */target/
 
-shared_lib/Cargo.lock
+common_lib/Cargo.lock
