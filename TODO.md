@@ -1,11 +1,8 @@
 # TODO
 
-- [x] Fila por ordem de chegada de pacientes
-    - [x] Obter senha normal
-    - [x] Obter senha prioritária
+- [ ] Fila por ordem de chegada de pacientes
 - [ ] Atendimento dos pacientes
-    - [ ] Chamar senha normal
-    - [ ] Chamar senha prioritária
+    - [ ] Chamar paciente
     - [ ] Criar ficha de atendimento do paciente
         - [ ] Se o paciente já tiver cadastro, checar as informações dele
         - [ ] Se as informações estiverem erradas, ser possível alterá-las

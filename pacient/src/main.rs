@@ -1,25 +1,17 @@
 use std::env;
-use std::fs;
 
-use ctrlc;
 use dotenv::dotenv;
+use shared_lib::IOToolkit;
 
 use pacient::pacient_manager::PacientManager;
 
 fn main() {
     dotenv().ok();
 
-    ctrlc::set_handler(move || {
-        println!("\n\nEncerrando programa...");
-        fs::remove_file(
-            env::var("PACIENT_QUEUE_FILE_PATH")
-                .expect("Enviroment variable 'PACIENT_QUEUE_FILE_PATH' not set"),
-        )
-        .unwrap();
-        println!("Programa encerrado.");
-        std::process::exit(0);
-    })
-    .expect("Unable to set exit handler");
+    let pacient_queue_file_path =
+        env::var("PACIENT_QUEUE_FILE_PATH").expect("Unable to get enviroment variable");
+    IOToolkit::remove_file_when_process_exits(pacient_queue_file_path.clone());
 
-    PacientManager::start();
+    let manager = PacientManager::new(pacient_queue_file_path);
+    manager.start();
 }

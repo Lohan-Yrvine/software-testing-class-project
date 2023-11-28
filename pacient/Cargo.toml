@@ -5,5 +5,4 @@ edition = "2021"
 
 [dependencies]
 shared_lib = { path = "../shared_lib" }
-ctrlc = "3.4"
 dotenv = "0.15"

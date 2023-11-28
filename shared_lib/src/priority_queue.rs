@@ -1,3 +1,4 @@
+use anyhow::{anyhow, Result};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
@@ -46,9 +47,9 @@ impl PriorityQueue {
         }
     }
 
-    pub fn take_ticket(&mut self, ticket_priority: TicketPriority) -> Option<u8> {
+    pub fn enqueue(&mut self, ticket_priority: TicketPriority) -> Result<()> {
         if self.max_tickets_amount == self.next_ticket_number {
-            return None;
+            return Err(anyhow!("Queue is full"));
         }
 
         self.next_ticket_number += 1;
@@ -63,7 +64,7 @@ impl PriorityQueue {
             }
         }
 
-        Some(self.next_ticket_number)
+        Ok(())
     }
 
     pub fn get_high_priority_queue(&self) -> Vec<u8> {
@@ -81,17 +82,11 @@ impl PriorityQueue {
     }
 
     pub fn get_queue(&self) -> Vec<&PriorityQueueTicket> {
-        let mut high_priority_tickets: Vec<&PriorityQueueTicket> = self
-            .high_priority_queue
-            .iter()
-            .map(|ticket| ticket)
-            .collect();
+        let mut high_priority_tickets: Vec<&PriorityQueueTicket> =
+            self.high_priority_queue.iter().collect();
 
-        let normal_priority_tickets: Vec<&PriorityQueueTicket> = self
-            .normal_priority_queue
-            .iter()
-            .map(|ticket| ticket)
-            .collect();
+        let normal_priority_tickets: Vec<&PriorityQueueTicket> =
+            self.normal_priority_queue.iter().collect();
 
         high_priority_tickets.extend(normal_priority_tickets);
         high_priority_tickets
@@ -99,5 +94,11 @@ impl PriorityQueue {
 
     pub fn get_max_tickets_amount(&self) -> u8 {
         self.max_tickets_amount
+    }
+}
+
+impl Default for PriorityQueue {
+    fn default() -> Self {
+        Self::new()
     }
 }

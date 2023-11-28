@@ -41,3 +41,9 @@ fn read_json_file_test() {
         Err(_) => assert!(false),
     }
 }
+
+#[test]
+#[ignore]
+fn file_remover_test() {
+    todo!()
+}

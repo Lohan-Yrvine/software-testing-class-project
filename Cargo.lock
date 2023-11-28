@@ -74,7 +74,6 @@ dependencies = [
 name = "pacient"
 version = "0.1.0"
 dependencies = [
- "ctrlc",
  "dotenv",
  "shared_lib",
 ]
@@ -175,6 +174,7 @@ name = "shared_lib"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "ctrlc",
  "rand",
  "serde",
  "serde_derive",

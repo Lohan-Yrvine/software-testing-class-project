@@ -9,7 +9,7 @@ use serde_json;
 pub struct IOToolkit;
 
 impl IOToolkit {
-    pub fn save_as_json<T>(path: &'static str, buff: &Vec<T>) -> Result<()>
+    pub fn save_as_json<T>(path: &str, buff: &Vec<T>) -> Result<()>
     where
         T: Sized + Serialize,
     {
@@ -24,7 +24,7 @@ impl IOToolkit {
         Ok(())
     }
 
-    pub fn read_from_json<T>(path: &'static str) -> Result<Vec<T>>
+    pub fn read_from_json<T>(path: &str) -> Result<Vec<T>>
     where
         T: de::DeserializeOwned,
     {
@@ -33,5 +33,17 @@ impl IOToolkit {
         let deserialized = serde_json::from_reader(reader)?;
 
         Ok(deserialized)
+    }
+
+    pub fn remove_file_when_process_exits(path: String) {
+        ctrlc::set_handler(move || {
+            println!("\n\nEncerrando programa...");
+            if Path::new(&path).exists() {
+                fs::remove_file(&path).unwrap();
+            }
+            println!("Programa encerrado.");
+            std::process::exit(0);
+        })
+        .expect("Unable to set exit handler");
     }
 }
