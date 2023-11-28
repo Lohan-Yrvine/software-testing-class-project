@@ -18,11 +18,11 @@ impl PriorityQueueTicket {
         Self { code, priority }
     }
 
-    pub fn get_code(&self) -> u8 {
+    pub fn code(&self) -> u8 {
         self.code
     }
 
-    pub fn get_priority(&self) -> TicketPriority {
+    pub fn priority(&self) -> TicketPriority {
         self.priority
     }
 }
@@ -92,7 +92,7 @@ impl PriorityQueue {
         high_priority_tickets
     }
 
-    pub fn get_max_tickets_amount(&self) -> u8 {
+    pub fn max_tickets_amount(&self) -> u8 {
         self.max_tickets_amount
     }
 }

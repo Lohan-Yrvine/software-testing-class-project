@@ -25,7 +25,7 @@ fn taking_normal_priority_tickets_out_of_bounds() {
         let _ = queue.enqueue(TicketPriority::Normal);
     }
 
-    let expected_queue: Vec<u8> = (1..=queue.get_max_tickets_amount()).collect();
+    let expected_queue: Vec<u8> = (1..=queue.max_tickets_amount()).collect();
 
     assert_eq!(queue.get_normal_priority_queue(), expected_queue);
     assert!(queue.get_high_priority_queue().is_empty());
@@ -54,7 +54,7 @@ fn taking_high_priority_tickets_out_of_bounds() {
         let _ = queue.enqueue(TicketPriority::High);
     }
 
-    let expected_queue: Vec<u8> = (1..=queue.get_max_tickets_amount()).collect();
+    let expected_queue: Vec<u8> = (1..=queue.max_tickets_amount()).collect();
 
     assert_eq!(queue.get_high_priority_queue(), expected_queue);
     assert!(queue.get_normal_priority_queue().is_empty());
@@ -121,12 +121,12 @@ fn taking_arbitrary_priority_tickets_out_of_bounds() {
 
     let mut expected_queue: Vec<&PriorityQueueTicket> = aux_queue
         .iter()
-        .filter(|ticket| ticket.get_priority() == TicketPriority::High)
+        .filter(|ticket| ticket.priority() == TicketPriority::High)
         .collect();
     expected_queue.extend(
         aux_queue
             .iter()
-            .filter(|ticket| ticket.get_priority() == TicketPriority::Normal)
+            .filter(|ticket| ticket.priority() == TicketPriority::Normal)
             .collect::<Vec<_>>(),
     );
 

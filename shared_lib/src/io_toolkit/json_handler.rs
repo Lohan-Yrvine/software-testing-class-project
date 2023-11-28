@@ -4,11 +4,10 @@ use std::path::Path;
 
 use anyhow::Result;
 use serde::{de, Serialize};
-use serde_json;
 
-pub struct IOToolkit;
+pub struct JsonHandler;
 
-impl IOToolkit {
+impl JsonHandler {
     pub fn save_as_json<T>(path: &str, buff: &Vec<T>) -> Result<()>
     where
         T: Sized + Serialize,
@@ -33,17 +32,5 @@ impl IOToolkit {
         let deserialized = serde_json::from_reader(reader)?;
 
         Ok(deserialized)
-    }
-
-    pub fn remove_file_when_process_exits(path: String) {
-        ctrlc::set_handler(move || {
-            println!("\n\nEncerrando programa...");
-            if Path::new(&path).exists() {
-                fs::remove_file(&path).unwrap();
-            }
-            println!("Programa encerrado.");
-            std::process::exit(0);
-        })
-        .expect("Unable to set exit handler");
     }
 }
