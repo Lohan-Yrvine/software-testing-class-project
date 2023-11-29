@@ -34,8 +34,8 @@ where
             match self.parse_ticket_priority_input(&ticket_priority) {
                 Some(priority) => self.handle_enqueue(priority),
                 None => {
-                    let invalid_input_msg =
-                        "\nTipo de atendimento INVÁLIDO. Por favor, insira novamente.\n";
+                    let invalid_input_msg = "\nTipo de atendimento INVÁLIDO.\n\
+                        Por favor, insira novamente.\n";
 
                     self.io_handler
                         .write(invalid_input_msg)
@@ -78,7 +78,7 @@ where
                     .expect("Unable to save queue in file");
 
                 let accepted_service_msg = "\nPedido de atendimento aceito.\n\
-                    Você será chamado(a) quando for sua vez. Por favor, aguarde.\n";
+                    Você será chamado(a) quando for sua vez.\nPor favor, aguarde.\n";
 
                 self.io_handler
                     .write(accepted_service_msg)
