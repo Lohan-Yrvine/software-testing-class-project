@@ -51,7 +51,8 @@ where
                 "\n[1] Prioritário\n\
                 [2] Normal\n\
                 \n\
-                Insira o tipo de atendimento para receber seu número de chamada: ",
+                Insira o tipo de atendimento desejado\n\
+                para entrar na fila de atendimento: ",
             )
             .expect("Unable to write priority options");
 
