@@ -15,8 +15,13 @@ fn main() {
         env::var("DENTIST_QUEUE_FILE_PATH").expect("Unable to get enviroment variable");
 
     let io_handler = IOHandler::default();
+    // FIXME: should not remove the dentist queue file, but doing it while
+    // the dentist binary is not implemented
     io_handler
-        .set_remove_file_on_exit_handler(pacient_queue_file_path.clone())
+        .set_remove_file_on_exit_handler(
+            dentist_queue_file_path.clone(),
+            Some("\n\nPrograma encerrado.".to_string())
+        )
         .expect("Unable to set remove on exit handler");
 
     let mut manager = ServiceManager::new(

@@ -34,13 +34,22 @@ where
         Ok(())
     }
 
-    pub fn set_remove_file_on_exit_handler(&self, path: String) -> Result<()> {
+    pub fn set_remove_file_on_exit_handler(
+        &self,
+        path: String,
+        message: Option<String>,
+    ) -> Result<()> {
         ctrlc::set_handler(move || {
-            println!("\n\nEncerrando programa...");
             if Path::new(&path).exists() {
                 fs::remove_file(&path).unwrap();
             }
-            println!("Programa encerrado.");
+
+            // TODO: maybe find a way to use self.writer instead of
+            // hardcoded println here?
+            if let Some(msg) = &message {
+                println!("{}", msg);
+            }
+
             std::process::exit(0);
         })?;
 

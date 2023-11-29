@@ -14,7 +14,10 @@ fn main() {
 
     let io_handler = IOHandler::default();
     io_handler
-        .set_remove_file_on_exit_handler(queue_file_path.clone())
+        .set_remove_file_on_exit_handler(
+            queue_file_path.clone(),
+            Some("\n\nPrograma encerrado.".to_string()),
+        )
         .expect("Unable to set remove on exit handler");
 
     let mut manager = PacientManager::new(io_handler, PriorityQueue::new(), queue_file_path);

@@ -76,10 +76,13 @@ where
             Ok(()) => {
                 JsonHandler::save_as_json(&self.queue_path, &self.queue.get_queue())
                     .expect("Unable to save queue in file");
-                println!(
-                    "\nPedido de atendimento aceito.\n\
-                    Você será chamado(a) quando for sua vez. Por favor, aguarde."
-                );
+
+                let accepted_service_msg = "\nPedido de atendimento aceito.\n\
+                    Você será chamado(a) quando for sua vez. Por favor, aguarde.\n";
+
+                self.io_handler
+                    .write(accepted_service_msg)
+                    .expect("Unable to write accepted service message");
             }
             Err(e) => eprintln!("{}", e),
         }
