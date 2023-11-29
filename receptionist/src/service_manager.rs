@@ -48,14 +48,13 @@ where
             match self.parse_operation_input(&operation_input) {
                 Some(OperationMode::AttendPacient) => self.attend_pacient(),
                 Some(OperationMode::ProcessPayment) => self.process_payment(),
-                None => {
-                    let invalid_operation_msg =
-                        "\nModo de operação inserido é INVÁLIDO. Por favor, insira novamente.\n";
-
-                    self.io_handler
-                        .write(invalid_operation_msg)
-                        .expect("Unable to write invalid operation input error message");
-                }
+                None => self
+                    .io_handler
+                    .write(
+                        "\nModo de operação é INVÁLIDO.\n\
+                        Por favor, insira novamente.\n",
+                    )
+                    .expect("Unable to write invalid operation input error message"),
             }
         }
     }

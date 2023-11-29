@@ -33,14 +33,13 @@ where
 
             match self.parse_ticket_priority_input(&ticket_priority) {
                 Some(priority) => self.handle_enqueue(priority),
-                None => {
-                    let invalid_input_msg = "\nTipo de atendimento INVÁLIDO.\n\
-                        Por favor, insira novamente.\n";
-
-                    self.io_handler
-                        .write(invalid_input_msg)
-                        .expect("Unable to write invalid input error message");
-                }
+                None => self
+                    .io_handler
+                    .write(
+                        "\nTipo de atendimento INVÁLIDO.\n\
+                        Por favor, insira novamente.\n",
+                    )
+                    .expect("Unable to write invalid input error message"),
             }
         }
     }
