@@ -1,7 +1,7 @@
 use std::env;
 
-use common_lib::io_handler::{DefaultIOHandler, IOHandler};
-use common_lib::priority_queue::PriorityQueue;
+use common::io_handler::{DefaultIOHandler, IOHandler};
+use common::priority_queue::PriorityQueue;
 use dotenv::dotenv;
 
 use pacient::pacient_manager::PacientManager;

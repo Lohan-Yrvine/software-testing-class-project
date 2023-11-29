@@ -1,8 +1,8 @@
 use std::io;
 
-use common_lib::io_handler::IOHandler;
-use common_lib::json_handler::JsonHandler;
-use common_lib::priority_queue::{PriorityQueue, TicketPriority};
+use common::io_handler::IOHandler;
+use common::json_handler::JsonHandler;
+use common::priority_queue::{PriorityQueue, TicketPriority};
 
 pub struct ServiceManager<R, W> {
     io_handler: IOHandler<R, W>,

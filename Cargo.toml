@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
-    "common_lib",
+    "libcommon",
 
     "pacient",
     "receptionist",

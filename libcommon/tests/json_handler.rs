@@ -2,7 +2,7 @@ use std::fs::{self, File};
 use std::io::{BufReader, Write};
 
 use anyhow::Result;
-use common_lib::json_handler::JsonHandler;
+use common::json_handler::JsonHandler;
 
 #[test]
 fn save_file_as_json_test() -> Result<()> {

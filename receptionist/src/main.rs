@@ -1,7 +1,7 @@
 use std::env;
 
-use common_lib::io_handler::{DefaultIOHandler, IOHandler};
-use common_lib::priority_queue::PriorityQueue;
+use common::io_handler::{DefaultIOHandler, IOHandler};
+use common::priority_queue::PriorityQueue;
 use dotenv::dotenv;
 
 use receptionist::service_manager::ServiceManager;
@@ -20,7 +20,7 @@ fn main() {
     io_handler
         .set_remove_file_on_exit_handler(
             dentist_queue_file_path.clone(),
-            Some("\n\nPrograma encerrado.".to_string())
+            Some("\n\nPrograma encerrado.".to_string()),
         )
         .expect("Unable to set remove on exit handler");
 
