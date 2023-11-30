@@ -1,1 +1,0 @@
-mod pacient_manager;
