@@ -72,6 +72,8 @@ where
     }
 
     fn handle_enqueue(&mut self, priority: TicketPriority) {
+        self.pull_file_updates();
+
         match self.queue.enqueue(priority) {
             Ok(()) => {
                 JsonHandler::save_as_json(&self.queue_path, &self.queue.get_queue())
@@ -85,6 +87,12 @@ where
                     .expect("Unable to write accepted service message");
             }
             Err(e) => eprintln!("{}", e),
+        }
+    }
+
+    fn pull_file_updates(&mut self) {
+        if let Ok(queue) = JsonHandler::read_from_json(&self.queue_path) {
+            self.queue = PriorityQueue::from(queue);
         }
     }
 }
