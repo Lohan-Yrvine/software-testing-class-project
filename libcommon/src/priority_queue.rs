@@ -1,3 +1,5 @@
+use std::convert::From;
+
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
@@ -39,13 +41,11 @@ impl PriorityQueue {
         Self {
             high_priority_queue: Vec::new(),
             normal_priority_queue: Vec::new(),
-            next_ticket_number: 0,
+            next_ticket_number: 1,
         }
     }
 
     pub fn enqueue(&mut self, ticket_priority: TicketPriority) -> Result<()> {
-        self.next_ticket_number += 1;
-
         let ticket = PriorityQueueTicket::new(self.next_ticket_number, ticket_priority);
         match ticket.priority {
             TicketPriority::Normal => {
@@ -55,6 +55,8 @@ impl PriorityQueue {
                 self.high_priority_queue.push(ticket);
             }
         }
+
+        self.next_ticket_number += 1;
 
         Ok(())
     }
@@ -92,5 +94,21 @@ impl PriorityQueue {
 impl Default for PriorityQueue {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+impl From<Vec<PriorityQueueTicket>> for PriorityQueue {
+    fn from(value: Vec<PriorityQueueTicket>) -> Self {
+        let mut queue = PriorityQueue::new();
+        let queue_len = value.len();
+
+        queue.next_ticket_number = (queue_len + 1) as u8;
+
+        value.into_iter().for_each(|ticket| match ticket.priority {
+            TicketPriority::High => queue.high_priority_queue.push(ticket),
+            TicketPriority::Normal => queue.normal_priority_queue.push(ticket),
+        });
+
+        queue
     }
 }

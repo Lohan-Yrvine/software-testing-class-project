@@ -143,3 +143,10 @@ fn taking_arbitrary_priority_tickets_255_tickets() {
     );
     assert_eq!(queue.get_queue(), expected_queue);
 }
+
+// TODO: test if the convertion from Vec<PriorityQueueTicket> is working correctly
+#[test]
+#[ignore]
+fn convertion_from_vec_test() {
+    todo!()
+}
