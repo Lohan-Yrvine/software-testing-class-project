@@ -3,7 +3,7 @@ use rand;
 use common::priority_queue::{PriorityQueue, PriorityQueueTicket, TicketPriority};
 
 #[test]
-fn taking_normal_priority_tickets_within_bounds() {
+fn taking_normal_priority_tickets_10_tickets() {
     let mut queue = PriorityQueue::new();
     let repetitions = 10;
 
@@ -18,21 +18,22 @@ fn taking_normal_priority_tickets_within_bounds() {
 }
 
 #[test]
-fn taking_normal_priority_tickets_out_of_bounds() {
+fn taking_normal_priority_tickets_255_tickets() {
     let mut queue = PriorityQueue::new();
+    let repetitions = 255;
 
-    for _ in 0..255 {
+    for _ in 0..repetitions {
         let _ = queue.enqueue(TicketPriority::Normal);
     }
 
-    let expected_queue: Vec<u8> = (1..=queue.max_tickets_amount()).collect();
+    let expected_queue: Vec<u8> = (1..=repetitions).collect();
 
     assert_eq!(queue.get_normal_priority_queue(), expected_queue);
     assert!(queue.get_high_priority_queue().is_empty());
 }
 
 #[test]
-fn taking_high_priority_tickets_within_bounds() {
+fn taking_high_priority_tickets_10_tickets() {
     let mut queue = PriorityQueue::new();
     let repetitions = 10;
 
@@ -47,21 +48,22 @@ fn taking_high_priority_tickets_within_bounds() {
 }
 
 #[test]
-fn taking_high_priority_tickets_out_of_bounds() {
+fn taking_high_priority_tickets_255_tickets() {
     let mut queue = PriorityQueue::new();
+    let repetitions = 255;
 
-    for _ in 0..255 {
+    for _ in 0..repetitions {
         let _ = queue.enqueue(TicketPriority::High);
     }
 
-    let expected_queue: Vec<u8> = (1..=queue.max_tickets_amount()).collect();
+    let expected_queue: Vec<u8> = (1..=repetitions).collect();
 
     assert_eq!(queue.get_high_priority_queue(), expected_queue);
     assert!(queue.get_normal_priority_queue().is_empty());
 }
 
 #[test]
-fn taking_arbitrary_priority_tickets_within_bounds() {
+fn taking_arbitrary_priority_tickets_5_tickets() {
     let mut queue = PriorityQueue::new();
 
     queue.enqueue(TicketPriority::Normal).unwrap();
@@ -94,13 +96,14 @@ fn taking_arbitrary_priority_tickets_within_bounds() {
 }
 
 #[test]
-fn taking_arbitrary_priority_tickets_out_of_bounds() {
+fn taking_arbitrary_priority_tickets_255_tickets() {
     let mut queue = PriorityQueue::new();
     let mut expected_high_priority_queue = vec![];
     let mut expected_normal_priority_queue = vec![];
     let mut aux_queue = vec![];
+    let repetitions = 255;
 
-    for code in 1..=255 {
+    for code in 1..=repetitions {
         let priority = if rand::random() {
             TicketPriority::Normal
         } else {

@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
@@ -31,27 +31,19 @@ impl PriorityQueueTicket {
 pub struct PriorityQueue {
     high_priority_queue: Vec<PriorityQueueTicket>,
     normal_priority_queue: Vec<PriorityQueueTicket>,
-    max_tickets_amount: u8,
     next_ticket_number: u8,
 }
 
 impl PriorityQueue {
     pub fn new() -> Self {
-        let max_tickets_amount = 20usize;
-
         Self {
-            high_priority_queue: Vec::with_capacity(max_tickets_amount),
-            normal_priority_queue: Vec::with_capacity(max_tickets_amount),
-            max_tickets_amount: max_tickets_amount as u8,
+            high_priority_queue: Vec::new(),
+            normal_priority_queue: Vec::new(),
             next_ticket_number: 0,
         }
     }
 
     pub fn enqueue(&mut self, ticket_priority: TicketPriority) -> Result<()> {
-        if self.max_tickets_amount == self.next_ticket_number {
-            return Err(anyhow!("Queue is full"));
-        }
-
         self.next_ticket_number += 1;
 
         let ticket = PriorityQueueTicket::new(self.next_ticket_number, ticket_priority);
@@ -92,8 +84,8 @@ impl PriorityQueue {
         high_priority_tickets
     }
 
-    pub fn max_tickets_amount(&self) -> u8 {
-        self.max_tickets_amount
+    pub fn is_empty(&self) -> bool {
+        self.high_priority_queue.is_empty() && self.normal_priority_queue.is_empty()
     }
 }
 
