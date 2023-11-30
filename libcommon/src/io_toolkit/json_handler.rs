@@ -10,7 +10,7 @@ pub struct JsonHandler;
 impl JsonHandler {
     pub fn save_as_json<T>(path: &str, buff: &Vec<T>) -> Result<()>
     where
-        T: Sized + Serialize,
+        T: Serialize,
     {
         if Path::new(path).exists() {
             fs::remove_file(path)?;
