@@ -11,16 +11,16 @@ pub enum TicketPriority {
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct PriorityQueueTicket {
-    code: u8,
+    code: usize,
     priority: TicketPriority,
 }
 
 impl PriorityQueueTicket {
-    pub fn new(code: u8, priority: TicketPriority) -> Self {
+    pub fn new(code: usize, priority: TicketPriority) -> Self {
         Self { code, priority }
     }
 
-    pub fn code(&self) -> u8 {
+    pub fn code(&self) -> usize {
         self.code
     }
 
@@ -33,7 +33,7 @@ impl PriorityQueueTicket {
 pub struct PriorityQueue {
     high_priority_queue: Vec<PriorityQueueTicket>,
     normal_priority_queue: Vec<PriorityQueueTicket>,
-    next_ticket_number: u8,
+    next_ticket_number: usize,
 }
 
 impl PriorityQueue {
@@ -61,14 +61,14 @@ impl PriorityQueue {
         Ok(())
     }
 
-    pub fn get_high_priority_queue(&self) -> Vec<u8> {
+    pub fn get_high_priority_queue(&self) -> Vec<usize> {
         self.high_priority_queue
             .iter()
             .map(|ticket| ticket.code)
             .collect()
     }
 
-    pub fn get_normal_priority_queue(&self) -> Vec<u8> {
+    pub fn get_normal_priority_queue(&self) -> Vec<usize> {
         self.normal_priority_queue
             .iter()
             .map(|ticket| ticket.code)
@@ -102,7 +102,7 @@ impl From<Vec<PriorityQueueTicket>> for PriorityQueue {
         let mut queue = PriorityQueue::new();
         let queue_len = value.len();
 
-        queue.next_ticket_number = (queue_len + 1) as u8;
+        queue.next_ticket_number = queue_len + 1;
 
         value.into_iter().for_each(|ticket| match ticket.priority {
             TicketPriority::High => queue.high_priority_queue.push(ticket),

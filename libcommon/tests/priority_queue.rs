@@ -11,7 +11,7 @@ fn taking_normal_priority_tickets_10_tickets() {
         let _ = queue.enqueue(TicketPriority::Normal);
     }
 
-    let expected_queue: Vec<u8> = (1..=repetitions).collect();
+    let expected_queue: Vec<usize> = (1..=repetitions).collect();
 
     assert_eq!(queue.get_normal_priority_queue(), expected_queue);
     assert!(queue.get_high_priority_queue().is_empty());
@@ -26,7 +26,7 @@ fn taking_normal_priority_tickets_255_tickets() {
         let _ = queue.enqueue(TicketPriority::Normal);
     }
 
-    let expected_queue: Vec<u8> = (1..=repetitions).collect();
+    let expected_queue: Vec<usize> = (1..=repetitions).collect();
 
     assert_eq!(queue.get_normal_priority_queue(), expected_queue);
     assert!(queue.get_high_priority_queue().is_empty());
@@ -41,7 +41,7 @@ fn taking_high_priority_tickets_10_tickets() {
         let _ = queue.enqueue(TicketPriority::High);
     }
 
-    let expect_queue: Vec<u8> = (1..=repetitions).collect();
+    let expect_queue: Vec<usize> = (1..=repetitions).collect();
 
     assert_eq!(queue.get_high_priority_queue(), expect_queue);
     assert!(queue.get_normal_priority_queue().is_empty());
@@ -56,7 +56,7 @@ fn taking_high_priority_tickets_255_tickets() {
         let _ = queue.enqueue(TicketPriority::High);
     }
 
-    let expected_queue: Vec<u8> = (1..=repetitions).collect();
+    let expected_queue: Vec<usize> = (1..=repetitions).collect();
 
     assert_eq!(queue.get_high_priority_queue(), expected_queue);
     assert!(queue.get_normal_priority_queue().is_empty());
@@ -72,8 +72,8 @@ fn taking_arbitrary_priority_tickets_5_tickets() {
     queue.enqueue(TicketPriority::Normal).unwrap();
     queue.enqueue(TicketPriority::High).unwrap();
 
-    let expected_high_priority_queue: Vec<u8> = vec![3, 5];
-    let expected_normal_priority_queue: Vec<u8> = vec![1, 2, 4];
+    let expected_high_priority_queue: Vec<usize> = vec![3, 5];
+    let expected_normal_priority_queue: Vec<usize> = vec![1, 2, 4];
     let expected_queue = vec![
         PriorityQueueTicket::new(3, TicketPriority::High),
         PriorityQueueTicket::new(5, TicketPriority::High),
