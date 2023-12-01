@@ -4,12 +4,12 @@ use anyhow::Result;
 
 use crate::json_handler::JsonHandler;
 
-pub struct Database {
-    path: String,
+pub struct Database<'a> {
+    path: &'a str,
 }
 
-impl Database {
-    pub fn new(path: String) -> Self {
+impl<'a> Database<'a> {
+    pub fn new(path: &'a str) -> Self {
         Self { path }
     }
 
