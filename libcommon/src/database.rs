@@ -1,8 +1,25 @@
 use std::collections::HashMap;
+use std::error::Error;
+use std::fmt::Display;
 
 use anyhow::Result;
 
 use crate::json_handler::JsonHandler;
+
+#[derive(Debug)]
+pub enum DatabaseError {
+    ElementNotFound,
+}
+
+impl Display for DatabaseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::ElementNotFound => write!(f, "Element not found\n"),
+        }
+    }
+}
+
+impl Error for DatabaseError {}
 
 pub struct Database<'a> {
     path: &'a str,
@@ -23,7 +40,7 @@ impl<'a> Database<'a> {
         JsonHandler::save_as_json(&self.path, &db_content)
     }
 
-    pub fn query<T>(&self, key: &str) -> Result<Option<T>>
+    pub fn query<T>(&self, key: &str) -> Result<T>
     where
         T: From<HashMap<String, String>>,
     {
@@ -33,13 +50,13 @@ impl<'a> Database<'a> {
             .into_iter()
             .find(|hashmap| hashmap.contains_key(key))
         {
-            return Ok(Some(hashmap.into()));
+            return Ok(hashmap.into());
         }
 
-        Ok(None)
+        Err(DatabaseError::ElementNotFound.into())
     }
 
-    pub fn update<T>(&self, key: &str, element: T) -> Result<Option<()>>
+    pub fn update<T>(&self, key: &str, element: T) -> Result<()>
     where
         T: Into<HashMap<String, String>>,
     {
@@ -52,14 +69,12 @@ impl<'a> Database<'a> {
             *hashmap = element.into();
 
             JsonHandler::save_as_json(&self.path, &db_content)?;
-
-            return Ok(Some(()));
         }
 
-        Ok(None)
+        Ok(())
     }
 
-    pub fn delete<T>(&self, key: &str) -> Result<Option<T>>
+    pub fn delete<T>(&self, key: &str) -> Result<T>
     where
         T: From<HashMap<String, String>>,
     {
@@ -73,9 +88,9 @@ impl<'a> Database<'a> {
 
             JsonHandler::save_as_json(&self.path, &db_content)?;
 
-            return Ok(Some(removed.into()));
+            return Ok(removed.into());
         }
 
-        Ok(None)
+        Err(DatabaseError::ElementNotFound.into())
     }
 }
