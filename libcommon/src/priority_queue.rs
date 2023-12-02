@@ -100,9 +100,11 @@ impl Default for PriorityQueue {
 impl From<Vec<PriorityQueueTicket>> for PriorityQueue {
     fn from(value: Vec<PriorityQueueTicket>) -> Self {
         let mut queue = PriorityQueue::new();
-        let queue_len = value.len();
 
-        queue.next_ticket_number = queue_len + 1;
+        queue.next_ticket_number = match value.iter().max_by_key(|&ticket| ticket.code) {
+            Some(ticket) => ticket.code + 1,
+            None => 1,
+        };
 
         value.into_iter().for_each(|ticket| match ticket.priority {
             TicketPriority::High => queue.high_priority_queue.push(ticket),
