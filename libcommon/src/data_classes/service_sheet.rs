@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::database::GetKeyAttributesValue;
 use crate::datetime_parsing::parse_datetime_from_default_fmt;
 use crate::pacient_account::Pacient;
+use crate::priority_queue::{Priority, TicketPriority};
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct ServiceSheet {
@@ -37,5 +38,34 @@ impl ServiceSheet {
 impl GetKeyAttributesValue for ServiceSheet {
     fn get_key_attributes_value(&self) -> String {
         self.pacient.cpf().to_string()
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct SheetWithPriority {
+    service_sheet: ServiceSheet,
+    priority: TicketPriority,
+}
+
+impl SheetWithPriority {
+    pub fn new(service_sheet: ServiceSheet, priority: TicketPriority) -> Self {
+        Self {
+            service_sheet,
+            priority,
+        }
+    }
+
+    pub fn service_sheet(&self) -> &ServiceSheet {
+        &self.service_sheet
+    }
+
+    pub fn priority(&self) -> TicketPriority {
+        self.priority
+    }
+}
+
+impl Priority for SheetWithPriority {
+    fn priority(&self) -> TicketPriority {
+        self.priority
     }
 }

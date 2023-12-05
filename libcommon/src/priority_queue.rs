@@ -87,14 +87,16 @@ impl<T: Priority> Default for PriorityQueue<T> {
     }
 }
 
-impl From<Vec<PriorityQueueTicket>> for PriorityQueue<PriorityQueueTicket> {
-    fn from(value: Vec<PriorityQueueTicket>) -> Self {
+impl<T: Priority> From<Vec<T>> for PriorityQueue<T> {
+    fn from(value: Vec<T>) -> Self {
         let mut queue = PriorityQueue::new();
 
-        value.into_iter().for_each(|ticket| match ticket.priority {
-            TicketPriority::High => queue.high_priority_queue.push(ticket),
-            TicketPriority::Normal => queue.normal_priority_queue.push(ticket),
-        });
+        value
+            .into_iter()
+            .for_each(|ticket| match ticket.priority() {
+                TicketPriority::High => queue.high_priority_queue.push(ticket),
+                TicketPriority::Normal => queue.normal_priority_queue.push(ticket),
+            });
 
         queue
     }

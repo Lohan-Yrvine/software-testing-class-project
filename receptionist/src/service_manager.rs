@@ -5,8 +5,8 @@ use common::database::Database;
 use common::io_handler::IOHandler;
 use common::json_handler::JsonHandler;
 use common::pacient_account::{Address, Pacient};
-use common::priority_queue::PriorityQueueTicket;
-use common::service_sheet::ServiceSheet;
+use common::priority_queue::{Priority, PriorityQueue, PriorityQueueTicket, TicketPriority};
+use common::service_sheet::{ServiceSheet, SheetWithPriority};
 
 enum OperationMode {
     AttendPacient,
@@ -115,7 +115,7 @@ where
         };
 
         let sheet = self.create_service_sheet(pacient);
-        self.enqueue_pacient_in_dentist_queue(ticket, sheet);
+        self.enqueue_pacient_in_dentist_queue(sheet, ticket.priority());
     }
 
     fn get_next_pacient(&self) -> PriorityQueueTicket {
@@ -226,8 +226,11 @@ where
         sheet
     }
 
-    fn enqueue_pacient_in_dentist_queue(&self, ticket: PriorityQueueTicket, sheet: ServiceSheet) {
-        todo!()
+    fn enqueue_pacient_in_dentist_queue(&self, sheet: ServiceSheet, priority: TicketPriority) {
+        let dentist_queue = JsonHandler::read_from_json(&self.dentist_queue_path).unwrap();
+        let mut dentist_queue = PriorityQueue::from(dentist_queue);
+        dentist_queue.enqueue(SheetWithPriority::new(sheet, priority));
+        JsonHandler::save_as_json(&self.dentist_queue_path, &dentist_queue.queue()).unwrap();
     }
 
     fn process_payment(&self) {
