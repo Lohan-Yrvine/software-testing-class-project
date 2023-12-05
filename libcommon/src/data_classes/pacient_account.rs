@@ -1,11 +1,13 @@
+use std::fmt::Display;
+
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 
-use crate::database::{Database, GetKeyAttributesValue};
+use crate::database::{Database, GetKeyAttribute};
 use crate::datetime_parsing::parse_datetime_from_default_fmt;
 use crate::service_sheet::ServiceSheet;
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Address {
     street: String,
     neighborhood: String,
@@ -34,7 +36,7 @@ impl Address {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Pacient {
     name: String,
     cpf: String,
@@ -75,6 +77,10 @@ impl Pacient {
         &self.phone_number
     }
 
+    pub fn set_phone_number(&mut self, phone_number: String) {
+        self.phone_number = phone_number
+    }
+
     pub fn date_of_birth(&self) -> &str {
         &self.date_of_birth
     }
@@ -83,16 +89,32 @@ impl Pacient {
         &self.address
     }
 
+    pub fn set_address(&mut self, address: Address) {
+        self.address = address;
+    }
+
     pub fn street(&self) -> &str {
         &self.address.street
+    }
+
+    pub fn set_street(&mut self, street: String) {
+        self.address.street = street;
     }
 
     pub fn neighborhood(&self) -> &str {
         &self.address.neighborhood
     }
 
+    pub fn set_neighborhood(&mut self, neighborhood: String) {
+        self.address.neighborhood = neighborhood;
+    }
+
     pub fn city(&self) -> &str {
         &self.address.city
+    }
+
+    pub fn set_city(&mut self, city: String) {
+        self.address.city = city;
     }
 
     pub fn date_of_creation(&self) -> &str {
@@ -104,8 +126,14 @@ impl Pacient {
     }
 }
 
-impl GetKeyAttributesValue for Pacient {
-    fn get_key_attributes_value(&self) -> String {
+impl GetKeyAttribute for Pacient {
+    fn get_key_attribute(&self) -> String {
         self.cpf.to_string()
+    }
+}
+
+impl Display for Pacient {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(f, "{:#?}", &self)
     }
 }

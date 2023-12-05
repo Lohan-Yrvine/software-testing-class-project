@@ -1,7 +1,7 @@
 use std::io;
 
 use chrono::Local;
-use common::database::Database;
+use common::database::{Database, GetKeyAttribute};
 use common::io_handler::IOHandler;
 use common::json_handler::JsonHandler;
 use common::pacient_account::{Address, Pacient};
@@ -60,7 +60,7 @@ where
             match self.parse_operation_input(&operation_input) {
                 OperationMode::AttendPacient => self.attend_pacient(),
                 OperationMode::ProcessPayment => self.process_payment(),
-                OperationMode::ManageAppointment => self.manage_appointment(),
+                OperationMode::ManageAppointment => self.manage_appointments(),
             }
         }
     }
@@ -140,8 +140,60 @@ where
         self.pacient_accounts.query(&cpf).unwrap()
     }
 
-    fn check_pacient_data(&mut self, pacient: Pacient) -> Pacient {
-        todo!()
+    fn check_pacient_data(&mut self, mut pacient: Pacient) -> Pacient {
+        self.io_handler.write("Dados do paciente:\n").unwrap();
+        self.io_handler.write(&pacient).unwrap();
+
+        self.io_handler
+            .write(
+                "\n[1] Sim\n\
+                [2] Não\n\
+                \n\
+                Algum dos campos está errado? ",
+            )
+            .unwrap();
+        let wrong_field = self.io_handler.read_line().unwrap();
+
+        if wrong_field.trim() == "1" {
+            self.update_pacient_account(&mut pacient);
+        }
+
+        pacient
+    }
+
+    // FIXME: the next two functions are extremely ugly
+    fn update_pacient_account(&mut self, pacient: &mut Pacient) {
+        self.io_handler
+            .write("Deixe o campo vazio em caso de não alteração\n")
+            .unwrap();
+
+        self.io_handler.write("Número de celular: ").unwrap();
+        let phone_number = self.io_handler.read_line().unwrap();
+        if !phone_number.trim().is_empty() {
+            pacient.set_phone_number(phone_number.trim().to_string());
+        }
+
+        self.io_handler.write("Rua: ").unwrap();
+        let street = self.io_handler.read_line().unwrap();
+        if !street.trim().is_empty() {
+            pacient.set_street(street.trim().to_string());
+        }
+
+        self.io_handler.write("Bairro: ").unwrap();
+        let neighborhood = self.io_handler.read_line().unwrap();
+        if !neighborhood.trim().is_empty() {
+            pacient.set_neighborhood(neighborhood.trim().to_string());
+        }
+
+        self.io_handler.write("Cidade: ").unwrap();
+        let city = self.io_handler.read_line().unwrap();
+        if !city.trim().is_empty() {
+            pacient.set_city(city.trim().to_string());
+        }
+
+        self.pacient_accounts
+            .update(&pacient.get_key_attribute(), pacient.clone())
+            .unwrap();
     }
 
     fn create_pacient_account(&mut self) -> String {
@@ -237,7 +289,7 @@ where
         todo!()
     }
 
-    fn manage_appointment(&self) {
+    fn manage_appointments(&self) {
         todo!()
     }
 }

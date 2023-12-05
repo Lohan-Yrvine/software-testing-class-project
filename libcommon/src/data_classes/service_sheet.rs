@@ -1,7 +1,7 @@
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 
-use crate::database::GetKeyAttributesValue;
+use crate::database::GetKeyAttribute;
 use crate::datetime_parsing::parse_datetime_from_default_fmt;
 use crate::pacient_account::Pacient;
 use crate::priority_queue::{Priority, TicketPriority};
@@ -35,8 +35,8 @@ impl ServiceSheet {
     }
 }
 
-impl GetKeyAttributesValue for ServiceSheet {
-    fn get_key_attributes_value(&self) -> String {
+impl GetKeyAttribute for ServiceSheet {
+    fn get_key_attribute(&self) -> String {
         self.pacient.cpf().to_string()
     }
 }

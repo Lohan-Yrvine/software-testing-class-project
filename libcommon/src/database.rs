@@ -7,8 +7,8 @@ use serde::{de, Serialize};
 
 use crate::json_handler::JsonHandler;
 
-pub trait GetKeyAttributesValue {
-    fn get_key_attributes_value(&self) -> String;
+pub trait GetKeyAttribute {
+    fn get_key_attribute(&self) -> String;
 }
 
 pub struct Database {
@@ -37,13 +37,13 @@ impl Database {
 
     pub fn query<T>(&self, key: &str) -> Result<T>
     where
-        T: Serialize + de::DeserializeOwned + GetKeyAttributesValue,
+        T: Serialize + de::DeserializeOwned + GetKeyAttribute,
     {
         let db_content: Vec<T> = JsonHandler::read_from_json(&self.path)?;
 
         if let Some(element) = db_content
             .into_iter()
-            .find(|element| element.get_key_attributes_value() == key)
+            .find(|element| element.get_key_attribute() == key)
         {
             return Ok(element);
         }
@@ -53,13 +53,13 @@ impl Database {
 
     pub fn query_vec<T>(&self, key: &str) -> Result<Vec<T>>
     where
-        T: Serialize + de::DeserializeOwned + GetKeyAttributesValue,
+        T: Serialize + de::DeserializeOwned + GetKeyAttribute,
     {
         let db_content: Vec<T> = JsonHandler::read_from_json(&self.path)?;
 
         let result: Vec<T> = db_content
             .into_iter()
-            .filter(|element| element.get_key_attributes_value() == key)
+            .filter(|element| element.get_key_attribute() == key)
             .collect();
 
         if !result.is_empty() {
@@ -71,13 +71,13 @@ impl Database {
 
     pub fn update<T>(&self, key: &str, new_element: T) -> Result<()>
     where
-        T: Serialize + de::DeserializeOwned + GetKeyAttributesValue,
+        T: Serialize + de::DeserializeOwned + GetKeyAttribute,
     {
         let mut db_content: Vec<T> = JsonHandler::read_from_json(&self.path)?;
 
         if let Some(element) = db_content
             .iter_mut()
-            .find(|element| element.get_key_attributes_value() == key)
+            .find(|element| element.get_key_attribute() == key)
         {
             *element = new_element;
 
@@ -89,13 +89,13 @@ impl Database {
 
     pub fn delete<T>(&self, key: &str) -> Result<T>
     where
-        T: Serialize + de::DeserializeOwned + GetKeyAttributesValue,
+        T: Serialize + de::DeserializeOwned + GetKeyAttribute,
     {
         let mut db_content: Vec<T> = JsonHandler::read_from_json(&self.path)?;
 
         if let Some(idx) = db_content
             .iter()
-            .position(|element| element.get_key_attributes_value() == key)
+            .position(|element| element.get_key_attribute() == key)
         {
             let removed = db_content.swap_remove(idx);
 
