@@ -263,7 +263,7 @@ where
 
     fn create_service_sheet(&mut self, pacient: Pacient) -> ServiceSheet {
         self.io_handler
-            .write("Criando ficha de atendimento...\n")
+            .write("\nCriando ficha de atendimento...\n")
             .unwrap();
 
         self.io_handler
@@ -280,8 +280,12 @@ where
     }
 
     fn enqueue_pacient_in_dentist_queue(&self, sheet: ServiceSheet, priority: TicketPriority) {
-        let dentist_queue = JsonHandler::read_from_json(&self.dentist_queue_path).unwrap();
-        let mut dentist_queue = PriorityQueue::from(dentist_queue);
+        let mut dentist_queue;
+        if let Ok(queue) = JsonHandler::read_from_json(&self.dentist_queue_path) {
+            dentist_queue = PriorityQueue::from(queue);
+        } else {
+            dentist_queue = PriorityQueue::new()
+        }
         dentist_queue.enqueue(SheetWithPriority::new(sheet, priority));
         JsonHandler::save_as_json(&self.dentist_queue_path, &dentist_queue.queue()).unwrap();
     }
@@ -306,8 +310,10 @@ where
             self.make_appointment()
         } else if appointment_operation.trim() == "2" {
             self.update_appointment()
-        } else {
+        } else if appointment_operation.trim() == "3" {
             self.delete_appointment()
+        } else {
+            self.show_appointments()
         }
     }
 
@@ -339,5 +345,9 @@ where
         let cpf = self.io_handler.read_line().unwrap();
 
         let _: Appointment = self.appointment_schedule.delete(cpf.trim()).unwrap();
+    }
+
+    fn show_appointments(&mut self) {
+        todo!()
     }
 }
