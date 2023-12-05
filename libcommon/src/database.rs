@@ -1,96 +1,109 @@
-use std::collections::HashMap;
-use std::error::Error;
-use std::fmt::Display;
+use std::fs::File;
+use std::io::Write;
+use std::path::Path;
 
-use anyhow::Result;
+use anyhow::{anyhow, Result};
+use serde::{de, Serialize};
 
 use crate::json_handler::JsonHandler;
 
-#[derive(Debug)]
-pub enum DatabaseError {
-    ElementNotFound,
+pub trait GetKeyAttributesValue {
+    fn get_key_attributes_value(&self) -> String;
 }
 
-impl Display for DatabaseError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::ElementNotFound => write!(f, "Element not found\n"),
+pub struct Database<'db> {
+    path: &'db str,
+}
+
+impl<'db> Database<'db> {
+    pub fn new(path: &'db str) -> Self {
+        if !Path::new(path).exists() {
+            let mut file = File::create(path).unwrap();
+            file.write_all("[]".as_bytes()).unwrap();
         }
-    }
-}
 
-impl Error for DatabaseError {}
-
-pub struct Database<'a> {
-    path: &'a str,
-}
-
-impl<'a> Database<'a> {
-    pub fn new(path: &'a str) -> Self {
         Self { path }
     }
 
     pub fn insert<T>(&self, value: T) -> Result<()>
     where
-        T: Into<HashMap<String, String>>,
+        T: Serialize + de::DeserializeOwned,
     {
-        let mut db_content: Vec<HashMap<String, String>> = JsonHandler::read_from_json(&self.path)?;
-        db_content.push(value.into());
+        let mut db_content: Vec<T> = JsonHandler::read_from_json(self.path)?;
+        db_content.push(value);
 
-        JsonHandler::save_as_json(&self.path, &db_content)
+        JsonHandler::save_as_json(self.path, &db_content)
     }
 
-    pub fn query<T>(&self, key: &str) -> Result<T>
+    pub fn query<T>(&self, key: &'db str) -> Result<T>
     where
-        T: From<HashMap<String, String>>,
+        T: Serialize + de::DeserializeOwned + GetKeyAttributesValue,
     {
-        let db_content: Vec<HashMap<String, String>> = JsonHandler::read_from_json(&self.path)?;
+        let db_content: Vec<T> = JsonHandler::read_from_json(self.path)?;
 
-        if let Some(hashmap) = db_content
+        if let Some(element) = db_content
             .into_iter()
-            .find(|hashmap| hashmap.contains_key(key))
+            .find(|element| element.get_key_attributes_value() == key)
         {
-            return Ok(hashmap.into());
+            return Ok(element);
         }
 
-        Err(DatabaseError::ElementNotFound.into())
+        Err(anyhow!("Element not found"))
     }
 
-    pub fn update<T>(&self, key: &str, element: T) -> Result<()>
+    pub fn query_vec<T>(&self, key: &'db str) -> Result<Vec<T>>
     where
-        T: Into<HashMap<String, String>>,
+        T: Serialize + de::DeserializeOwned + GetKeyAttributesValue,
     {
-        let mut db_content: Vec<HashMap<String, String>> = JsonHandler::read_from_json(&self.path)?;
+        let db_content: Vec<T> = JsonHandler::read_from_json(self.path)?;
 
-        if let Some(hashmap) = db_content
+        let result: Vec<T> = db_content
+            .into_iter()
+            .filter(|element| element.get_key_attributes_value() == key)
+            .collect();
+
+        if !result.is_empty() {
+            return Ok(result);
+        }
+
+        Err(anyhow!("Element not found"))
+    }
+
+    pub fn update<T>(&self, key: &'db str, new_element: T) -> Result<()>
+    where
+        T: Serialize + de::DeserializeOwned + GetKeyAttributesValue,
+    {
+        let mut db_content: Vec<T> = JsonHandler::read_from_json(self.path)?;
+
+        if let Some(element) = db_content
             .iter_mut()
-            .find(|hashmap| hashmap.contains_key(key))
+            .find(|element| element.get_key_attributes_value() == key)
         {
-            *hashmap = element.into();
+            *element = new_element;
 
-            JsonHandler::save_as_json(&self.path, &db_content)?;
+            JsonHandler::save_as_json(self.path, &db_content)?;
         }
 
         Ok(())
     }
 
-    pub fn delete<T>(&self, key: &str) -> Result<T>
+    pub fn delete<T>(&self, key: &'db str) -> Result<T>
     where
-        T: From<HashMap<String, String>>,
+        T: Serialize + de::DeserializeOwned + GetKeyAttributesValue,
     {
-        let mut db_content: Vec<HashMap<String, String>> = JsonHandler::read_from_json(&self.path)?;
+        let mut db_content: Vec<T> = JsonHandler::read_from_json(self.path)?;
 
         if let Some(idx) = db_content
             .iter()
-            .position(|hashmap| hashmap.contains_key(key))
+            .position(|element| element.get_key_attributes_value() == key)
         {
             let removed = db_content.swap_remove(idx);
 
-            JsonHandler::save_as_json(&self.path, &db_content)?;
+            JsonHandler::save_as_json(self.path, &db_content)?;
 
-            return Ok(removed.into());
+            return Ok(removed);
         }
 
-        Err(DatabaseError::ElementNotFound.into())
+        Err(anyhow!("Element not found"))
     }
 }
