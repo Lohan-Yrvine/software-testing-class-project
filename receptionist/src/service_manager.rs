@@ -1,6 +1,7 @@
 use std::io;
 
 use chrono::Local;
+use common::appointment::Appointment;
 use common::database::{Database, GetKeyAttribute};
 use common::io_handler::IOHandler;
 use common::json_handler::JsonHandler;
@@ -289,7 +290,49 @@ where
         todo!()
     }
 
-    fn manage_appointments(&self) {
+    fn manage_appointments(&mut self) {
+        self.io_handler
+            .write(
+                "[1] Marcar consulta\n\
+                [2] Remarcar consulta\n\
+                [3] Desmarcar consulta\n\
+                \n\
+                Insira a operação que deseja fazer: ",
+            )
+            .unwrap();
+        let appointment_operation = self.io_handler.read_line().unwrap();
+
+        if appointment_operation.trim() == "1" {
+            self.make_appointment()
+        } else if appointment_operation.trim() == "2" {
+            self.update_appointment()
+        } else {
+            self.delete_appointment()
+        }
+    }
+
+    fn make_appointment(&mut self) {
+        self.io_handler.write("Marcando consulta...\n").unwrap();
+
+        self.io_handler.write("CPF do paciente: ").unwrap();
+        let cpf = self.io_handler.read_line().unwrap();
+
+        self.io_handler.write("Data em dd-mm-aaaa: ").unwrap();
+        let date = self.io_handler.read_line().unwrap();
+
+        self.appointment_schedule
+            .insert(Appointment::new(
+                cpf.trim().to_string(),
+                date.trim().to_string(),
+            ))
+            .unwrap();
+    }
+
+    fn update_appointment(&self) {
+        todo!()
+    }
+
+    fn delete_appointment(&self) {
         todo!()
     }
 }
