@@ -36,17 +36,8 @@ where
 
         loop {
             let ticket_priority = self.get_ticket_priority_input();
-
-            match self.parse_ticket_priority_input(&ticket_priority) {
-                Some(priority) => self.handle_enqueue(priority),
-                None => self
-                    .io_handler
-                    .write(
-                        "\nTipo de atendimento INVÁLIDO.\n\
-                        Por favor, insira novamente.\n",
-                    )
-                    .unwrap(),
-            }
+            let parsed_priority = self.parse_ticket_priority_input(&ticket_priority);
+            self.handle_enqueue(parsed_priority);
         }
     }
 
@@ -64,15 +55,13 @@ where
         self.io_handler.read_line().unwrap()
     }
 
-    fn parse_ticket_priority_input(&self, priority: &str) -> Option<TicketPriority> {
+    fn parse_ticket_priority_input(&self, priority: &str) -> TicketPriority {
         let trimmed = priority.trim();
         if trimmed == "1" {
-            return Some(TicketPriority::High);
-        } else if trimmed == "2" {
-            return Some(TicketPriority::Normal);
+            return TicketPriority::High;
+        } else {
+            return TicketPriority::Normal;
         }
-
-        None
     }
 
     fn handle_enqueue(&mut self, priority: TicketPriority) {
