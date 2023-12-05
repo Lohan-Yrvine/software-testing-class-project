@@ -4,103 +4,113 @@ use common::priority_queue::{PriorityQueue, PriorityQueueTicket, TicketPriority}
 
 #[test]
 fn taking_normal_priority_tickets_10_tickets() {
-    let mut queue = PriorityQueue::new();
+    let mut actual_queue = PriorityQueue::new();
+    let mut expected_queue = Vec::new();
     let repetitions = 10;
 
-    for _ in 0..repetitions {
-        let _ = queue.enqueue(TicketPriority::Normal);
+    for code in 0..repetitions {
+        let ticket = PriorityQueueTicket::new(code, TicketPriority::Normal);
+        let _ = actual_queue.enqueue(ticket.clone());
+
+        expected_queue.push(ticket);
     }
 
-    let expected_queue: Vec<usize> = (1..=repetitions).collect();
-
-    assert_eq!(queue.get_normal_priority_queue(), expected_queue);
-    assert!(queue.get_high_priority_queue().is_empty());
+    assert_eq!(*actual_queue.normal_priority_queue(), expected_queue);
+    assert!(actual_queue.high_priority_queue().is_empty());
 }
 
 #[test]
 fn taking_normal_priority_tickets_255_tickets() {
-    let mut queue = PriorityQueue::new();
+    let mut actual_queue = PriorityQueue::new();
+    let mut expected_queue = Vec::new();
     let repetitions = 255;
 
-    for _ in 0..repetitions {
-        let _ = queue.enqueue(TicketPriority::Normal);
+    for code in 0..repetitions {
+        let ticket = PriorityQueueTicket::new(code, TicketPriority::Normal);
+        let _ = actual_queue.enqueue(ticket.clone());
+
+        expected_queue.push(ticket);
     }
 
-    let expected_queue: Vec<usize> = (1..=repetitions).collect();
-
-    assert_eq!(queue.get_normal_priority_queue(), expected_queue);
-    assert!(queue.get_high_priority_queue().is_empty());
+    assert_eq!(*actual_queue.normal_priority_queue(), expected_queue);
+    assert!(actual_queue.high_priority_queue().is_empty());
 }
 
 #[test]
 fn taking_high_priority_tickets_10_tickets() {
-    let mut queue = PriorityQueue::new();
+    let mut actual_queue = PriorityQueue::new();
+    let mut expected_queue = Vec::new();
     let repetitions = 10;
 
-    for _ in 0..repetitions {
-        let _ = queue.enqueue(TicketPriority::High);
+    for code in 0..repetitions {
+        let ticket = PriorityQueueTicket::new(code, TicketPriority::High);
+        let _ = actual_queue.enqueue(ticket.clone());
+
+        expected_queue.push(ticket);
     }
 
-    let expect_queue: Vec<usize> = (1..=repetitions).collect();
-
-    assert_eq!(queue.get_high_priority_queue(), expect_queue);
-    assert!(queue.get_normal_priority_queue().is_empty());
+    assert_eq!(*actual_queue.high_priority_queue(), expected_queue);
+    assert!(actual_queue.normal_priority_queue().is_empty());
 }
 
 #[test]
 fn taking_high_priority_tickets_255_tickets() {
-    let mut queue = PriorityQueue::new();
+    let mut actual_queue = PriorityQueue::new();
+    let mut expected_queue = Vec::new();
     let repetitions = 255;
 
-    for _ in 0..repetitions {
-        let _ = queue.enqueue(TicketPriority::High);
+    for code in 0..repetitions {
+        let ticket = PriorityQueueTicket::new(code, TicketPriority::High);
+        let _ = actual_queue.enqueue(ticket.clone());
+
+        expected_queue.push(ticket);
     }
 
-    let expected_queue: Vec<usize> = (1..=repetitions).collect();
-
-    assert_eq!(queue.get_high_priority_queue(), expected_queue);
-    assert!(queue.get_normal_priority_queue().is_empty());
+    assert_eq!(*actual_queue.high_priority_queue(), expected_queue);
+    assert!(actual_queue.normal_priority_queue().is_empty());
 }
 
 #[test]
 fn taking_arbitrary_priority_tickets_5_tickets() {
-    let mut queue = PriorityQueue::new();
+    let mut actual_queue = PriorityQueue::new();
 
-    queue.enqueue(TicketPriority::Normal).unwrap();
-    queue.enqueue(TicketPriority::Normal).unwrap();
-    queue.enqueue(TicketPriority::High).unwrap();
-    queue.enqueue(TicketPriority::Normal).unwrap();
-    queue.enqueue(TicketPriority::High).unwrap();
+    actual_queue.enqueue(PriorityQueueTicket::new(1, TicketPriority::Normal)).unwrap();
+    actual_queue.enqueue(PriorityQueueTicket::new(2, TicketPriority::Normal)).unwrap();
+    actual_queue.enqueue(PriorityQueueTicket::new(3, TicketPriority::High)).unwrap();
+    actual_queue.enqueue(PriorityQueueTicket::new(4, TicketPriority::Normal)).unwrap();
+    actual_queue.enqueue(PriorityQueueTicket::new(5, TicketPriority::High)).unwrap();
 
-    let expected_high_priority_queue: Vec<usize> = vec![3, 5];
-    let expected_normal_priority_queue: Vec<usize> = vec![1, 2, 4];
-    let expected_queue = vec![
+    let expected_high_priority_queue = vec![
         PriorityQueueTicket::new(3, TicketPriority::High),
         PriorityQueueTicket::new(5, TicketPriority::High),
+    ];
+    let expected_normal_priority_queue = vec![
         PriorityQueueTicket::new(1, TicketPriority::Normal),
         PriorityQueueTicket::new(2, TicketPriority::Normal),
         PriorityQueueTicket::new(4, TicketPriority::Normal),
     ];
-    let expected_queue: Vec<&PriorityQueueTicket> =
-        expected_queue.iter().map(|ticket| ticket).collect();
 
     assert_eq!(
-        queue.get_high_priority_queue(),
+        *actual_queue.high_priority_queue(),
         expected_high_priority_queue
     );
     assert_eq!(
-        queue.get_normal_priority_queue(),
+        *actual_queue.normal_priority_queue(),
         expected_normal_priority_queue
     );
-    assert_eq!(queue.get_queue(), expected_queue);
+
+    let mut expected_queue = expected_high_priority_queue.clone();
+    expected_queue.extend(expected_normal_priority_queue);
+    let expected_queue: Vec<&PriorityQueueTicket> = expected_queue.iter().collect();
+
+    assert_eq!(*actual_queue.queue(), expected_queue);
 }
 
 #[test]
 fn taking_arbitrary_priority_tickets_255_tickets() {
-    let mut queue = PriorityQueue::new();
-    let mut expected_high_priority_queue = vec![];
-    let mut expected_normal_priority_queue = vec![];
-    let mut aux_queue = vec![];
+    let mut actual_queue = PriorityQueue::new();
+    let mut expected_high_priority_queue = Vec::new();
+    let mut expected_normal_priority_queue = Vec::new();
     let repetitions = 255;
 
     for code in 1..=repetitions {
@@ -110,38 +120,32 @@ fn taking_arbitrary_priority_tickets_255_tickets() {
             TicketPriority::High
         };
 
-        match queue.enqueue(priority) {
+        let ticket = PriorityQueueTicket::new(code, priority);
+        match actual_queue.enqueue(ticket.clone()) {
             Ok(()) => {
-                aux_queue.push(PriorityQueueTicket::new(code, priority));
                 match priority {
-                    TicketPriority::Normal => expected_normal_priority_queue.push(code),
-                    TicketPriority::High => expected_high_priority_queue.push(code),
+                    TicketPriority::Normal => expected_normal_priority_queue.push(ticket.clone()),
+                    TicketPriority::High => expected_high_priority_queue.push(ticket.clone()),
                 };
             }
             Err(_) => (),
         }
     }
 
-    let mut expected_queue: Vec<&PriorityQueueTicket> = aux_queue
-        .iter()
-        .filter(|ticket| ticket.priority() == TicketPriority::High)
-        .collect();
-    expected_queue.extend(
-        aux_queue
-            .iter()
-            .filter(|ticket| ticket.priority() == TicketPriority::Normal)
-            .collect::<Vec<_>>(),
-    );
-
     assert_eq!(
-        queue.get_normal_priority_queue(),
+        *actual_queue.normal_priority_queue(),
         expected_normal_priority_queue
     );
     assert_eq!(
-        queue.get_high_priority_queue(),
+        *actual_queue.high_priority_queue(),
         expected_high_priority_queue
     );
-    assert_eq!(queue.get_queue(), expected_queue);
+
+    let mut expected_queue = expected_high_priority_queue.clone();
+    expected_queue.extend(expected_normal_priority_queue);
+    let expected_queue: Vec<&PriorityQueueTicket> = expected_queue.iter().collect();
+
+    assert_eq!(actual_queue.queue(), expected_queue);
 }
 
 // TODO: test if the convertion from Vec<PriorityQueueTicket> is working correctly

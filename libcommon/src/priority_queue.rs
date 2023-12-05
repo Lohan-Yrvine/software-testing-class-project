@@ -3,6 +3,10 @@ use std::convert::From;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
+pub trait Priority {
+    fn priority(&self) -> TicketPriority;
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub enum TicketPriority {
     Normal,
@@ -23,66 +27,55 @@ impl PriorityQueueTicket {
     pub fn code(&self) -> usize {
         self.code
     }
+}
 
-    pub fn priority(&self) -> TicketPriority {
+impl Priority for PriorityQueueTicket {
+    fn priority(&self) -> TicketPriority {
         self.priority
     }
 }
 
 // not implementing with binary heap because of lack of time
-pub struct PriorityQueue {
-    high_priority_queue: Vec<PriorityQueueTicket>,
-    normal_priority_queue: Vec<PriorityQueueTicket>,
-    next_ticket_number: usize,
+pub struct PriorityQueue<T: Priority> {
+    high_priority_queue: Vec<T>,
+    normal_priority_queue: Vec<T>,
 }
 
-impl PriorityQueue {
+impl<T> PriorityQueue<T>
+where
+    T: Priority,
+{
     pub fn new() -> Self {
         Self {
             high_priority_queue: Vec::new(),
             normal_priority_queue: Vec::new(),
-            next_ticket_number: 1,
         }
     }
 
-    pub fn enqueue(&mut self, ticket_priority: TicketPriority) -> Result<()> {
-        let ticket = PriorityQueueTicket::new(self.next_ticket_number, ticket_priority);
-        match ticket.priority {
+    pub fn enqueue(&mut self, element: T) -> Result<()> {
+        match element.priority() {
             TicketPriority::Normal => {
-                self.normal_priority_queue.push(ticket);
+                self.normal_priority_queue.push(element);
             }
             TicketPriority::High => {
-                self.high_priority_queue.push(ticket);
+                self.high_priority_queue.push(element);
             }
         }
-
-        self.next_ticket_number += 1;
 
         Ok(())
     }
 
-    pub fn get_high_priority_queue(&self) -> Vec<usize> {
-        self.high_priority_queue
-            .iter()
-            .map(|ticket| ticket.code)
-            .collect()
+    pub fn high_priority_queue(&self) -> &Vec<T> {
+        &self.high_priority_queue
     }
 
-    pub fn get_normal_priority_queue(&self) -> Vec<usize> {
-        self.normal_priority_queue
-            .iter()
-            .map(|ticket| ticket.code)
-            .collect()
+    pub fn normal_priority_queue(&self) -> &Vec<T> {
+        &self.normal_priority_queue
     }
 
-    pub fn get_queue(&self) -> Vec<&PriorityQueueTicket> {
-        let mut high_priority_tickets: Vec<&PriorityQueueTicket> =
-            self.high_priority_queue.iter().collect();
-
-        let normal_priority_tickets: Vec<&PriorityQueueTicket> =
-            self.normal_priority_queue.iter().collect();
-
-        high_priority_tickets.extend(normal_priority_tickets);
+    pub fn queue(&self) -> Vec<&T> {
+        let mut high_priority_tickets: Vec<&T> = self.high_priority_queue.iter().collect();
+        high_priority_tickets.extend(&self.normal_priority_queue);
         high_priority_tickets
     }
 
@@ -91,20 +84,15 @@ impl PriorityQueue {
     }
 }
 
-impl Default for PriorityQueue {
+impl<T: Priority> Default for PriorityQueue<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl From<Vec<PriorityQueueTicket>> for PriorityQueue {
+impl From<Vec<PriorityQueueTicket>> for PriorityQueue<PriorityQueueTicket> {
     fn from(value: Vec<PriorityQueueTicket>) -> Self {
         let mut queue = PriorityQueue::new();
-
-        queue.next_ticket_number = match value.iter().max_by_key(|&ticket| ticket.code) {
-            Some(ticket) => ticket.code + 1,
-            None => 1,
-        };
 
         value.into_iter().for_each(|ticket| match ticket.priority {
             TicketPriority::High => queue.high_priority_queue.push(ticket),
