@@ -1,6 +1,5 @@
 use std::convert::From;
 
-use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 pub trait Priority {
@@ -52,7 +51,7 @@ where
         }
     }
 
-    pub fn enqueue(&mut self, element: T) -> Result<()> {
+    pub fn enqueue(&mut self, element: T) {
         match element.priority() {
             TicketPriority::Normal => {
                 self.normal_priority_queue.push(element);
@@ -61,8 +60,6 @@ where
                 self.high_priority_queue.push(element);
             }
         }
-
-        Ok(())
     }
 
     pub fn high_priority_queue(&self) -> &Vec<T> {

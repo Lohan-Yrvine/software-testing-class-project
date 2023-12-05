@@ -74,11 +74,11 @@ fn taking_high_priority_tickets_255_tickets() {
 fn taking_arbitrary_priority_tickets_5_tickets() {
     let mut actual_queue = PriorityQueue::new();
 
-    actual_queue.enqueue(PriorityQueueTicket::new(1, TicketPriority::Normal)).unwrap();
-    actual_queue.enqueue(PriorityQueueTicket::new(2, TicketPriority::Normal)).unwrap();
-    actual_queue.enqueue(PriorityQueueTicket::new(3, TicketPriority::High)).unwrap();
-    actual_queue.enqueue(PriorityQueueTicket::new(4, TicketPriority::Normal)).unwrap();
-    actual_queue.enqueue(PriorityQueueTicket::new(5, TicketPriority::High)).unwrap();
+    actual_queue.enqueue(PriorityQueueTicket::new(1, TicketPriority::Normal));
+    actual_queue.enqueue(PriorityQueueTicket::new(2, TicketPriority::Normal));
+    actual_queue.enqueue(PriorityQueueTicket::new(3, TicketPriority::High));
+    actual_queue.enqueue(PriorityQueueTicket::new(4, TicketPriority::Normal));
+    actual_queue.enqueue(PriorityQueueTicket::new(5, TicketPriority::High));
 
     let expected_high_priority_queue = vec![
         PriorityQueueTicket::new(3, TicketPriority::High),
@@ -121,14 +121,11 @@ fn taking_arbitrary_priority_tickets_255_tickets() {
         };
 
         let ticket = PriorityQueueTicket::new(code, priority);
-        match actual_queue.enqueue(ticket.clone()) {
-            Ok(()) => {
-                match priority {
-                    TicketPriority::Normal => expected_normal_priority_queue.push(ticket.clone()),
-                    TicketPriority::High => expected_high_priority_queue.push(ticket.clone()),
-                };
-            }
-            Err(_) => (),
+        actual_queue.enqueue(ticket.clone());
+
+        match priority {
+            TicketPriority::Normal => expected_normal_priority_queue.push(ticket.clone()),
+            TicketPriority::High => expected_high_priority_queue.push(ticket.clone()),
         }
     }
 

@@ -81,23 +81,19 @@ where
         self.pull_file_updates();
 
         let ticket = PriorityQueueTicket::new(self.ticket_code, priority);
+        self.queue.enqueue(ticket);
 
-        match self.queue.enqueue(ticket) {
-            Ok(()) => {
-                JsonHandler::save_as_json(&self.queue_path, &self.queue.queue())
-                    .expect("Unable to save queue in file");
+        JsonHandler::save_as_json(&self.queue_path, &self.queue.queue())
+            .expect("Unable to save queue in file");
 
-                self.ticket_code += 1;
+        self.ticket_code += 1;
 
-                let accepted_service_msg = "\nPedido de atendimento aceito.\n\
+        let accepted_service_msg = "\nPedido de atendimento aceito.\n\
                     Você será chamado(a) quando for sua vez.\nPor favor, aguarde.\n";
 
-                self.io_handler
-                    .write(accepted_service_msg)
-                    .expect("Unable to write accepted service message");
-            }
-            Err(e) => eprintln!("{}", e),
-        }
+        self.io_handler
+            .write(accepted_service_msg)
+            .expect("Unable to write accepted service message");
     }
 
     fn pull_file_updates(&mut self) {
