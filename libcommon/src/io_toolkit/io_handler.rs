@@ -1,3 +1,4 @@
+use std::fmt::Display;
 use std::fs;
 use std::io;
 use std::path::Path;
@@ -28,7 +29,7 @@ where
         Ok(result)
     }
 
-    pub fn write(&mut self, msg: &str) -> Result<()> {
+    pub fn write<T: Display>(&mut self, msg: T) -> Result<()> {
         write!(self.writer, "{}", msg)?;
         self.writer.flush()?;
         Ok(())
