@@ -32,7 +32,7 @@ where
     pub fn start(&mut self) -> ! {
         self.io_handler
             .write("Seja bem-vindo(a) à SOS Dentes!\n")
-            .expect("Unable to write welcome message");
+            .unwrap();
 
         loop {
             let ticket_priority = self.get_ticket_priority_input();
@@ -45,7 +45,7 @@ where
                         "\nTipo de atendimento INVÁLIDO.\n\
                         Por favor, insira novamente.\n",
                     )
-                    .expect("Unable to write invalid input error message"),
+                    .unwrap(),
             }
         }
     }
@@ -59,11 +59,9 @@ where
                 Insira o tipo de atendimento desejado\n\
                 para entrar na fila de atendimento: ",
             )
-            .expect("Unable to write priority options");
+            .unwrap();
 
-        self.io_handler
-            .read_line()
-            .expect("Unable to read priority")
+        self.io_handler.read_line().unwrap()
     }
 
     fn parse_ticket_priority_input(&self, priority: &str) -> Option<TicketPriority> {
@@ -83,17 +81,14 @@ where
         let ticket = PriorityQueueTicket::new(self.ticket_code, priority);
         self.queue.enqueue(ticket);
 
-        JsonHandler::save_as_json(&self.queue_path, &self.queue.queue())
-            .expect("Unable to save queue in file");
+        JsonHandler::save_as_json(&self.queue_path, &self.queue.queue()).unwrap();
 
         self.ticket_code += 1;
 
         let accepted_service_msg = "\nPedido de atendimento aceito.\n\
                     Você será chamado(a) quando for sua vez.\nPor favor, aguarde.\n";
 
-        self.io_handler
-            .write(accepted_service_msg)
-            .expect("Unable to write accepted service message");
+        self.io_handler.write(accepted_service_msg).unwrap();
     }
 
     fn pull_file_updates(&mut self) {
