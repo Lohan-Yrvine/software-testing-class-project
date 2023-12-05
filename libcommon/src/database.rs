@@ -11,14 +11,14 @@ pub trait GetKeyAttributesValue {
     fn get_key_attributes_value(&self) -> String;
 }
 
-pub struct Database<'db> {
-    path: &'db str,
+pub struct Database {
+    path: String,
 }
 
-impl<'db> Database<'db> {
-    pub fn new(path: &'db str) -> Self {
-        if !Path::new(path).exists() {
-            let mut file = File::create(path).unwrap();
+impl Database {
+    pub fn new(path: String) -> Self {
+        if !Path::new(&path).exists() {
+            let mut file = File::create(&path).unwrap();
             file.write_all("[]".as_bytes()).unwrap();
         }
 
@@ -29,17 +29,17 @@ impl<'db> Database<'db> {
     where
         T: Serialize + de::DeserializeOwned,
     {
-        let mut db_content: Vec<T> = JsonHandler::read_from_json(self.path)?;
+        let mut db_content: Vec<T> = JsonHandler::read_from_json(&self.path)?;
         db_content.push(value);
 
-        JsonHandler::save_as_json(self.path, &db_content)
+        JsonHandler::save_as_json(&self.path, &db_content)
     }
 
-    pub fn query<T>(&self, key: &'db str) -> Result<T>
+    pub fn query<T>(&self, key: &str) -> Result<T>
     where
         T: Serialize + de::DeserializeOwned + GetKeyAttributesValue,
     {
-        let db_content: Vec<T> = JsonHandler::read_from_json(self.path)?;
+        let db_content: Vec<T> = JsonHandler::read_from_json(&self.path)?;
 
         if let Some(element) = db_content
             .into_iter()
@@ -51,11 +51,11 @@ impl<'db> Database<'db> {
         Err(anyhow!("Element not found"))
     }
 
-    pub fn query_vec<T>(&self, key: &'db str) -> Result<Vec<T>>
+    pub fn query_vec<T>(&self, key: &str) -> Result<Vec<T>>
     where
         T: Serialize + de::DeserializeOwned + GetKeyAttributesValue,
     {
-        let db_content: Vec<T> = JsonHandler::read_from_json(self.path)?;
+        let db_content: Vec<T> = JsonHandler::read_from_json(&self.path)?;
 
         let result: Vec<T> = db_content
             .into_iter()
@@ -69,11 +69,11 @@ impl<'db> Database<'db> {
         Err(anyhow!("Element not found"))
     }
 
-    pub fn update<T>(&self, key: &'db str, new_element: T) -> Result<()>
+    pub fn update<T>(&self, key: &str, new_element: T) -> Result<()>
     where
         T: Serialize + de::DeserializeOwned + GetKeyAttributesValue,
     {
-        let mut db_content: Vec<T> = JsonHandler::read_from_json(self.path)?;
+        let mut db_content: Vec<T> = JsonHandler::read_from_json(&self.path)?;
 
         if let Some(element) = db_content
             .iter_mut()
@@ -81,17 +81,17 @@ impl<'db> Database<'db> {
         {
             *element = new_element;
 
-            JsonHandler::save_as_json(self.path, &db_content)?;
+            JsonHandler::save_as_json(&self.path, &db_content)?;
         }
 
         Ok(())
     }
 
-    pub fn delete<T>(&self, key: &'db str) -> Result<T>
+    pub fn delete<T>(&self, key: &str) -> Result<T>
     where
         T: Serialize + de::DeserializeOwned + GetKeyAttributesValue,
     {
-        let mut db_content: Vec<T> = JsonHandler::read_from_json(self.path)?;
+        let mut db_content: Vec<T> = JsonHandler::read_from_json(&self.path)?;
 
         if let Some(idx) = db_content
             .iter()
@@ -99,7 +99,7 @@ impl<'db> Database<'db> {
         {
             let removed = db_content.swap_remove(idx);
 
-            JsonHandler::save_as_json(self.path, &db_content)?;
+            JsonHandler::save_as_json(&self.path, &db_content)?;
 
             return Ok(removed);
         }
