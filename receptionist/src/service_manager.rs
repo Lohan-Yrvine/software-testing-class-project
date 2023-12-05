@@ -4,10 +4,9 @@ use chrono::Local;
 use common::database::Database;
 use common::io_handler::IOHandler;
 use common::json_handler::JsonHandler;
+use common::pacient_account::{Address, Pacient};
 use common::priority_queue::PriorityQueueTicket;
-
-use crate::pacient_account::{Address, Pacient};
-use crate::service_sheet::ServiceSheet;
+use common::service_sheet::ServiceSheet;
 
 enum OperationMode {
     AttendPacient,
@@ -83,18 +82,18 @@ where
     fn parse_operation_input(&self, operation: &str) -> OperationMode {
         let trimmed = operation.trim();
         if trimmed == "1" {
-            return OperationMode::AttendPacient;
+            OperationMode::AttendPacient
         } else if trimmed == "2" {
-            return OperationMode::ProcessPayment;
+            OperationMode::ProcessPayment
         } else {
-            return OperationMode::ManageAppointment;
+            OperationMode::ManageAppointment
         }
     }
 
     fn attend_pacient(&mut self) {
-        let next = self.get_next_pacient();
+        let ticket = self.get_next_pacient();
         self.io_handler
-            .write(&format!("Código do próximo paciente: {}\n", next.code()))
+            .write(&format!("Código do próximo paciente: {}\n", ticket.code()))
             .unwrap();
 
         self.io_handler
@@ -108,14 +107,15 @@ where
         let has_account = self.io_handler.read_line().unwrap();
 
         let pacient = if has_account.trim() == "1" {
-            self.get_pacient_account()
+            let account = self.get_pacient_account();
+            self.check_pacient_data(account)
         } else {
             let key = self.create_pacient_account();
             self.pacient_accounts.query(&key).unwrap()
         };
 
-        self.create_service_sheet(pacient);
-        self.enqueue_pacient_in_dentist_queue(next);
+        let sheet = self.create_service_sheet(pacient);
+        self.enqueue_pacient_in_dentist_queue(ticket, sheet);
     }
 
     fn get_next_pacient(&self) -> PriorityQueueTicket {
@@ -138,8 +138,10 @@ where
         let cpf = self.io_handler.read_line().unwrap();
 
         self.pacient_accounts.query(&cpf).unwrap()
+    }
 
-        // TODO: check pacient data to see if an update is necessary
+    fn check_pacient_data(&mut self, pacient: Pacient) -> Pacient {
+        todo!()
     }
 
     fn create_pacient_account(&mut self) -> String {
@@ -206,7 +208,7 @@ where
         cpf_copy
     }
 
-    fn create_service_sheet(&mut self, pacient: Pacient) {
+    fn create_service_sheet(&mut self, pacient: Pacient) -> ServiceSheet {
         self.io_handler
             .write("Criando ficha de atendimento...\n")
             .unwrap();
@@ -219,10 +221,12 @@ where
 
         let sheet = ServiceSheet::new(pacient, reason, Local::now());
 
-        self.service_sheets_history.insert(sheet).unwrap();
+        self.service_sheets_history.insert(sheet.clone()).unwrap();
+
+        sheet
     }
 
-    fn enqueue_pacient_in_dentist_queue(&self, ticket: PriorityQueueTicket) {
+    fn enqueue_pacient_in_dentist_queue(&self, ticket: PriorityQueueTicket, sheet: ServiceSheet) {
         todo!()
     }
 

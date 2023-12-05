@@ -1,11 +1,11 @@
 use chrono::{DateTime, Local};
-use common::database::GetKeyAttributesValue;
-use serde_derive::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
+use crate::database::GetKeyAttributesValue;
 use crate::datetime_parsing::parse_datetime_from_default_fmt;
 use crate::pacient_account::Pacient;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct ServiceSheet {
     pacient: Pacient,
     reason: String,

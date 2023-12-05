@@ -1,11 +1,11 @@
 use chrono::{DateTime, Local};
-use common::database::{Database, GetKeyAttributesValue};
-use serde_derive::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
+use crate::database::{Database, GetKeyAttributesValue};
 use crate::datetime_parsing::parse_datetime_from_default_fmt;
 use crate::service_sheet::ServiceSheet;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Address {
     street: String,
     neighborhood: String,
@@ -34,7 +34,7 @@ impl Address {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Pacient {
     name: String,
     cpf: String,

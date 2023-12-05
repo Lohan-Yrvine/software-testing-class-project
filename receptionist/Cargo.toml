@@ -8,9 +8,7 @@ edition = "2021"
 doctest = false
 
 [dependencies]
-common = { path = "../libcommon" }
-dotenv = "0.15"
-chrono = "0.4"
-serde = { workspace = true }
-serde_derive = { workspace = true }
 anyhow = { workspace = true }
+common = { path = "../libcommon" }
+chrono = "0.4"
+dotenv = "0.15"

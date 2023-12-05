@@ -58,9 +58,9 @@ where
     fn parse_ticket_priority_input(&self, priority: &str) -> TicketPriority {
         let trimmed = priority.trim();
         if trimmed == "1" {
-            return TicketPriority::High;
+            TicketPriority::High
         } else {
-            return TicketPriority::Normal;
+            TicketPriority::Normal
         }
     }
 

@@ -75,6 +75,7 @@ name = "common"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "chrono",
  "ctrlc",
  "rand",
  "serde",
@@ -198,8 +199,6 @@ dependencies = [
  "anyhow",
  "common",
  "dotenv",
- "serde",
- "serde_derive",
 ]
 
 [[package]]
@@ -264,8 +263,6 @@ dependencies = [
  "chrono",
  "common",
  "dotenv",
- "serde",
- "serde_derive",
 ]
 
 [[package]]
