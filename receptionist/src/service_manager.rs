@@ -328,11 +328,16 @@ where
             .unwrap();
     }
 
-    fn update_appointment(&self) {
+    fn update_appointment(&mut self) {
         todo!()
     }
 
-    fn delete_appointment(&self) {
-        todo!()
+    fn delete_appointment(&mut self) {
+        self.io_handler.write("Desmarcando consulta...\n").unwrap();
+
+        self.io_handler.write("CPF do paciente: ").unwrap();
+        let cpf = self.io_handler.read_line().unwrap();
+
+        let _: Appointment = self.appointment_schedule.delete(cpf.trim()).unwrap();
     }
 }

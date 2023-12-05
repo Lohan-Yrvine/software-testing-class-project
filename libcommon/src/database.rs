@@ -27,7 +27,7 @@ impl Database {
 
     pub fn insert<T>(&self, value: T) -> Result<()>
     where
-        T: Serialize + de::DeserializeOwned,
+        T: Serialize + de::DeserializeOwned + GetKeyAttribute,
     {
         let mut db_content: Vec<T> = JsonHandler::read_from_json(&self.path)?;
         db_content.push(value);
