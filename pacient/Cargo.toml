@@ -12,3 +12,4 @@ common = { path = "../libcommon" }
 dotenv = "0.15"
 serde = { workspace = true }
 serde_derive = { workspace = true }
+anyhow = { workspace = true }

@@ -195,6 +195,7 @@ checksum = "dd8b5dd2ae5ed71462c540258bedcb51965123ad7e7ccf4b9a8cafaa4a63576d"
 name = "pacient"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "common",
  "dotenv",
  "serde",
@@ -259,6 +260,7 @@ dependencies = [
 name = "receptionist"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "chrono",
  "common",
  "dotenv",
