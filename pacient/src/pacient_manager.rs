@@ -2,12 +2,13 @@ use std::io;
 
 use common::io_handler::IOHandler;
 use common::json_handler::JsonHandler;
-use common::priority_queue::{PriorityQueue, TicketPriority};
+use common::priority_queue::{PriorityQueue, PriorityQueueTicket, TicketPriority};
 
 pub struct PacientManager<R, W> {
     io_handler: IOHandler<R, W>,
-    queue: PriorityQueue,
+    queue: PriorityQueue<PriorityQueueTicket>,
     queue_path: String,
+    ticket_code: usize,
 }
 
 impl<R, W> PacientManager<R, W>
@@ -15,11 +16,16 @@ where
     R: io::BufRead,
     W: io::Write,
 {
-    pub fn new(io_handler: IOHandler<R, W>, queue: PriorityQueue, queue_path: String) -> Self {
+    pub fn new(
+        io_handler: IOHandler<R, W>,
+        queue: PriorityQueue<PriorityQueueTicket>,
+        queue_path: String,
+    ) -> Self {
         Self {
             io_handler,
             queue,
             queue_path,
+            ticket_code: 1,
         }
     }
 
@@ -74,10 +80,14 @@ where
     fn handle_enqueue(&mut self, priority: TicketPriority) {
         self.pull_file_updates();
 
-        match self.queue.enqueue(priority) {
+        let ticket = PriorityQueueTicket::new(self.ticket_code, priority);
+
+        match self.queue.enqueue(ticket) {
             Ok(()) => {
-                JsonHandler::save_as_json(&self.queue_path, &self.queue.get_queue())
+                JsonHandler::save_as_json(&self.queue_path, &self.queue.queue())
                     .expect("Unable to save queue in file");
+
+                self.ticket_code += 1;
 
                 let accepted_service_msg = "\nPedido de atendimento aceito.\n\
                     Você será chamado(a) quando for sua vez.\nPor favor, aguarde.\n";
