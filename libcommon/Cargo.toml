@@ -4,13 +4,12 @@ version = "0.1.0"
 edition = "2021"
 
 [lib]
-# disabled since this project do NOT have documentation
+# disabled since this project does NOT have documentation
 doctest = false
 
 [dependencies]
 anyhow = { workspace = true }
 chrono = "0.4"
-ctrlc = "3.4"
 serde = { version = "1.0", features = ["derive"] }
 serde_derive = "1.0"
 serde_json = "1.0"

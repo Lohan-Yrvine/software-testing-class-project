@@ -14,10 +14,6 @@ fn main() -> Result<()> {
     let dentist_queue_file_path = env::var("DENTIST_QUEUE_FILE_PATH")?;
 
     let io_handler = IOHandler::default();
-    io_handler.set_remove_file_on_exit_handler(
-        dentist_queue_file_path.clone(),
-        Some("\n\nPrograma encerrado.".to_string()),
-    )?;
 
     let pacient_accounts = Database::new(env::var("PACIENT_ACCOUNTS_DATABASE")?);
     let service_sheets_history = Database::new(env::var("SERVICE_SHEETS_HISTORY_DATABASE")?);

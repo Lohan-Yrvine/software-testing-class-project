@@ -1,7 +1,5 @@
 use std::fmt::Display;
-use std::fs;
 use std::io;
-use std::path::Path;
 
 use anyhow::Result;
 
@@ -35,26 +33,8 @@ where
         Ok(())
     }
 
-    pub fn set_remove_file_on_exit_handler(
-        &self,
-        path: String,
-        message: Option<String>,
-    ) -> Result<()> {
-        ctrlc::set_handler(move || {
-            if Path::new(&path).exists() {
-                fs::remove_file(&path).unwrap();
-            }
-
-            // TODO: maybe find a way to use self.writer instead of
-            // hardcoded println here?
-            if let Some(msg) = &message {
-                println!("{}", msg);
-            }
-
-            std::process::exit(0);
-        })?;
-
-        Ok(())
+    pub fn writer(&self) -> &W {
+        &self.writer
     }
 }
 

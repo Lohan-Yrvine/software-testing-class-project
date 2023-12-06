@@ -4,11 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [lib]
-# disabled since this project do NOT have documentation
+# disabled since this project does NOT have documentation
 doctest = false
 
 [dependencies]
 anyhow = { workspace = true }
 common = { path = "../libcommon" }
-ctrlc = "3.4"
 dotenv = "0.15"
