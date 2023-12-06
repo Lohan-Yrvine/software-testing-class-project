@@ -1,17 +1,30 @@
+use std::io::{self, Cursor};
+
+use anyhow::Result;
+use common::io_handler::IOHandler;
+
 #[test]
-#[ignore]
-fn read_line_test() {
-    todo!()
+fn read_line_test() -> Result<()> {
+    let input = "Hello, World!\n";
+    let cursor = Cursor::new(input);
+    let mut io_handler = IOHandler::new(cursor, io::stdout());
+
+    let result = io_handler.read_line()?;
+    assert_eq!(result, input);
+
+    Ok(())
 }
 
 #[test]
-#[ignore]
-fn write_test() {
-    todo!()
-}
+fn write_test() -> Result<()> {
+    let input = "Hello, World\n";
+    let cursor = Cursor::new(vec![]);
+    let mut io_handler = IOHandler::new(io::stdin().lock(), cursor);
 
-#[test]
-#[ignore]
-fn file_remover_test() {
-    todo!()
+    io_handler.write(input)?;
+
+    let result = String::from_utf8(io_handler.writer().clone().into_inner())?;
+    assert_eq!(result, input);
+
+    Ok(())
 }
