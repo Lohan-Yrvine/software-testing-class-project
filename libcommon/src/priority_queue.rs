@@ -93,9 +93,9 @@ impl<T: Priority> From<Vec<T>> for PriorityQueue<T> {
 
         value
             .into_iter()
-            .for_each(|ticket| match ticket.priority() {
-                TicketPriority::High => queue.high_priority_queue.push(ticket),
-                TicketPriority::Normal => queue.normal_priority_queue.push(ticket),
+            .for_each(|element| match element.priority() {
+                TicketPriority::High => queue.high_priority_queue.push(element),
+                TicketPriority::Normal => queue.normal_priority_queue.push(element),
             });
 
         queue

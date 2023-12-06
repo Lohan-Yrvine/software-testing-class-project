@@ -145,9 +145,38 @@ fn taking_arbitrary_priority_tickets_255_tickets() {
     assert_eq!(actual_queue.queue(), expected_queue);
 }
 
-// TODO: test if the convertion from Vec<PriorityQueueTicket> is working correctly
 #[test]
-#[ignore]
 fn convertion_from_vec_test() {
-    todo!()
+    let sample = vec![
+        PriorityQueueTicket::new(1, TicketPriority::Normal),
+        PriorityQueueTicket::new(2, TicketPriority::Normal),
+        PriorityQueueTicket::new(3, TicketPriority::High),
+        PriorityQueueTicket::new(4, TicketPriority::Normal),
+        PriorityQueueTicket::new(5, TicketPriority::High),
+    ];
+    let mut expected_high_priority_queue = vec![
+        PriorityQueueTicket::new(3, TicketPriority::High),
+        PriorityQueueTicket::new(5, TicketPriority::High),
+    ];
+    let expected_normal_priority_queue = vec![
+        PriorityQueueTicket::new(1, TicketPriority::Normal),
+        PriorityQueueTicket::new(2, TicketPriority::Normal),
+        PriorityQueueTicket::new(4, TicketPriority::Normal),
+    ];
+
+    let actual_queue = PriorityQueue::from(sample);
+
+    assert_eq!(
+        *actual_queue.high_priority_queue(),
+        expected_high_priority_queue
+    );
+    assert_eq!(
+        *actual_queue.normal_priority_queue(),
+        expected_normal_priority_queue
+    );
+
+    expected_high_priority_queue.extend(expected_normal_priority_queue);
+    let expected_queue: Vec<&PriorityQueueTicket> = expected_high_priority_queue.iter().collect();
+
+    assert_eq!(*actual_queue.queue(), expected_queue);
 }
