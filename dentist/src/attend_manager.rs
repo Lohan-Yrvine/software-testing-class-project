@@ -1,8 +1,8 @@
 use std::io;
 use std::thread;
 use std::time;
-use anyhow::{Result, anyhow};
 
+use anyhow::{anyhow, Result};
 use common::io_handler::IOHandler;
 use common::json_handler::JsonHandler;
 use common::service_sheet::SheetWithPriority;
@@ -31,7 +31,7 @@ where
                 .unwrap();
             let _ = self.io_handler.read_line().unwrap();
 
-            match self.call_next_pacient(){
+            match self.call_next_pacient() {
                 Ok(sheet) => {
                     self.io_handler.write(sheet).unwrap();
                     self.io_handler.write("\nAtendendo paciente...\n").unwrap();
@@ -39,7 +39,7 @@ where
                     thread::sleep(dur);
                     self.io_handler.write("Atendimento finalizado\n").unwrap();
                 }
-                Err(e)=>{
+                Err(e) => {
                     self.io_handler.write(e).unwrap();
                 }
             }
@@ -49,7 +49,7 @@ where
     fn call_next_pacient(&self) -> Result<SheetWithPriority> {
         let mut sheets: Vec<SheetWithPriority> =
             JsonHandler::read_from_json(&self.queue_path).unwrap();
-        if sheets.is_empty(){
+        if sheets.is_empty() {
             return Err(anyhow!("Não existem fichas na fila no momento!\n"));
         }
         let result = sheets.remove(0);

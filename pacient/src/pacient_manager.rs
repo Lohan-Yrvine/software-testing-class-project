@@ -1,5 +1,5 @@
-use std::io;
 use std::fs;
+use std::io;
 
 use common::io_handler::IOHandler;
 use common::json_handler::JsonHandler;
@@ -30,14 +30,14 @@ where
         }
     }
 
-    pub fn start(&mut self){
+    pub fn start(&mut self) {
         self.io_handler
             .write("Seja bem-vindo(a) à SOS Dentes!\n")
             .unwrap();
 
         loop {
             let ticket_priority = self.get_ticket_priority_input();
-            if ticket_priority.trim() == "69"{
+            if ticket_priority.trim() == "69" {
                 fs::remove_file(&self.queue_path).unwrap();
                 break;
             }
