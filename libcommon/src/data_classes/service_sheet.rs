@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 
@@ -67,5 +69,12 @@ impl SheetWithPriority {
 impl Priority for SheetWithPriority {
     fn priority(&self) -> TicketPriority {
         self.priority
+    }
+}
+
+impl Display for SheetWithPriority {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.service_sheet.pacient)?;
+        write!(f, "Razão: {}", self.service_sheet.reason)
     }
 }
