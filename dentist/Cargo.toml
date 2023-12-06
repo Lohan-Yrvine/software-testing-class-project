@@ -1,0 +1,13 @@
+[package]
+name = "dentist"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+# disabled since this project do NOT have documentation
+doctest = false
+
+[dependencies]
+anyhow = { workspace = true }
+common = { path = "../libcommon" }
+dotenv = "0.15"
