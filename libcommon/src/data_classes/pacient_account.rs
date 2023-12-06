@@ -134,6 +134,12 @@ impl GetKeyAttribute for Pacient {
 
 impl Display for Pacient {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        writeln!(f, "{:#?}", &self)
+        writeln!(f, "Nome: {}", &self.name)?;
+        writeln!(f, "CPF: {}", &self.cpf)?;
+        writeln!(f, "Contato: {}", &self.phone_number)?;
+        writeln!(f, "Data de nascimento: {}", &self.date_of_birth)?;
+        writeln!(f, "Rua: {}", &self.street())?;
+        writeln!(f, "Bairro: {}", &self.neighborhood())?;
+        writeln!(f, "Cidade: {}", &self.city())
     }
 }
