@@ -10,4 +10,5 @@ doctest = false
 [dependencies]
 anyhow = { workspace = true }
 common = { path = "../libcommon" }
+ctrlc = "3.4"
 dotenv = "0.15"
