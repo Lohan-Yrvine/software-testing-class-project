@@ -22,7 +22,6 @@ fn main() -> Result<()> {
     let pacient_accounts = Database::new(env::var("PACIENT_ACCOUNTS_DATABASE")?);
     let service_sheets_history = Database::new(env::var("SERVICE_SHEETS_HISTORY_DATABASE")?);
     let appointment_schedule = Database::new(env::var("APPOINTMENT_SCHEDULE_DATABASE")?);
-    let payment_records = Database::new(env::var("PAYMENT_RECORDS_DATABASE")?);
 
     let mut manager = ServiceManager::new(
         io_handler,
@@ -31,7 +30,6 @@ fn main() -> Result<()> {
         pacient_accounts,
         service_sheets_history,
         appointment_schedule,
-        payment_records,
     );
     manager.start();
 }

@@ -13,6 +13,7 @@ enum OperationMode {
     AttendPacient,
     ProcessPayment,
     ManageAppointment,
+    GetTodaysPayments,
 }
 
 pub struct ServiceManager<R, W> {
@@ -22,7 +23,7 @@ pub struct ServiceManager<R, W> {
     pacient_accounts: Database,
     service_sheets_history: Database,
     appointment_schedule: Database,
-    payment_records: Database,
+    payments_of_the_day: Vec<usize>,
 }
 
 impl<R, W> ServiceManager<R, W>
@@ -37,7 +38,6 @@ where
         pacient_accounts: Database,
         service_sheets_history: Database,
         appointment_schedule: Database,
-        payment_records: Database,
     ) -> Self {
         Self {
             io_handler,
@@ -46,7 +46,7 @@ where
             pacient_accounts,
             service_sheets_history,
             appointment_schedule,
-            payment_records,
+            payments_of_the_day: Vec::new(),
         }
     }
 
@@ -62,6 +62,7 @@ where
                 OperationMode::AttendPacient => self.attend_pacient(),
                 OperationMode::ProcessPayment => self.process_payment(),
                 OperationMode::ManageAppointment => self.manage_appointments(),
+                OperationMode::GetTodaysPayments => self.get_todays_payments(),
             }
         }
     }
@@ -86,8 +87,10 @@ where
             OperationMode::AttendPacient
         } else if trimmed == "2" {
             OperationMode::ProcessPayment
-        } else {
+        } else if trimmed == "3" {
             OperationMode::ManageAppointment
+        } else {
+            OperationMode::GetTodaysPayments
         }
     }
 
@@ -290,8 +293,48 @@ where
         JsonHandler::save_as_json(&self.dentist_queue_path, &dentist_queue.queue()).unwrap();
     }
 
-    fn process_payment(&self) {
-        todo!()
+    fn process_payment(&mut self) {
+        self.io_handler
+            .write("\nProcessando pagamento...\n")
+            .unwrap();
+
+        self.io_handler
+            .write(
+                "[1] Consulta de rotina - R$200\n\
+                [2] Obturação - R$100\n\
+                [3] Limpeza - R$50\n\
+                \n\
+                Qual foi o tipo de antedimento? ",
+            )
+            .unwrap();
+        let procedure = self.io_handler.read_line().unwrap();
+
+        if procedure.trim() == "1" {
+            self.payments_of_the_day.push(200);
+        } else if procedure.trim() == "2" {
+            self.payments_of_the_day.push(100);
+        } else {
+            self.payments_of_the_day.push(50);
+        }
+
+        self.io_handler
+            .write("[1] Pix\n[2] Cartão\n[3] Espécie\n\nInsira a forma de pagamento: ")
+            .unwrap();
+        let _ = self.io_handler.read_line().unwrap();
+
+        self.io_handler.write("Pagamento efetuado\n").unwrap();
+    }
+
+    fn get_todays_payments(&mut self) {
+        self.io_handler
+            .write("\nRelatório de pagamentos do dia\n")
+            .unwrap();
+        self.io_handler
+            .write(&format!(
+                "Total arrecadado: R${}\n",
+                self.payments_of_the_day.iter().sum::<usize>()
+            ))
+            .unwrap();
     }
 
     fn manage_appointments(&mut self) {
