@@ -300,6 +300,7 @@ where
                 "[1] Marcar consulta\n\
                 [2] Remarcar consulta\n\
                 [3] Desmarcar consulta\n\
+                [4] Mostrar consultas marcadas\n\
                 \n\
                 Insira a operação que deseja fazer: ",
             )
@@ -335,7 +336,21 @@ where
     }
 
     fn update_appointment(&mut self) {
-        todo!()
+        self.io_handler.write("Remarcando consulta...\n").unwrap();
+
+        self.io_handler.write("CPF do paciente: ").unwrap();
+        let mut cpf = self.io_handler.read_line().unwrap();
+        cpf = cpf.trim().to_string();
+
+        self.io_handler
+            .write("Insira a nova data (dd-mm-aaaa): ")
+            .unwrap();
+        let mut date = self.io_handler.read_line().unwrap();
+        date = date.trim().to_string();
+
+        let appointment = Appointment::new(cpf.clone(), date);
+
+        self.appointment_schedule.update(&cpf, appointment).unwrap();
     }
 
     fn delete_appointment(&mut self) {
@@ -348,6 +363,12 @@ where
     }
 
     fn show_appointments(&mut self) {
-        todo!()
+        self.io_handler.write("Consultas marcadas").unwrap();
+
+        let appointments: Vec<Appointment> = self.appointment_schedule.query_all().unwrap();
+        appointments.into_iter().for_each(|appointment| {
+            self.io_handler.write(appointment).unwrap();
+            self.io_handler.write("\n").unwrap();
+        })
     }
 }
