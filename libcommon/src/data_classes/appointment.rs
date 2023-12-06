@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::database::GetKeyAttribute;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
 pub struct Appointment {
     pub cpf: String,
     pub date: String,
@@ -13,6 +13,14 @@ pub struct Appointment {
 impl Appointment {
     pub fn new(cpf: String, date: String) -> Self {
         Self { cpf, date }
+    }
+
+    pub fn cpf(&self) -> &str {
+        &self.cpf
+    }
+
+    pub fn date(&self) -> &str {
+        &self.date
     }
 }
 
