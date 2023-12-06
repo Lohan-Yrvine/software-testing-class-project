@@ -141,7 +141,7 @@ where
         self.io_handler.write("Insira o CPF do paciente: ").unwrap();
         let cpf = self.io_handler.read_line().unwrap();
 
-        self.pacient_accounts.query(&cpf).unwrap()
+        self.pacient_accounts.query(&cpf.trim()).unwrap()
     }
 
     fn check_pacient_data(&mut self, mut pacient: Pacient) -> Pacient {

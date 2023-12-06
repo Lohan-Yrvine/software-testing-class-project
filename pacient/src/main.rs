@@ -15,4 +15,5 @@ fn main() -> Result<()> {
 
     let mut manager = PacientManager::new(io_handler, PriorityQueue::new(), queue_file_path);
     manager.start();
+    Ok(())
 }
