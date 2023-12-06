@@ -29,19 +29,19 @@ impl Database {
     where
         T: Serialize + de::DeserializeOwned + GetKeyAttribute,
     {
-        let mut db_content: Vec<T> = JsonHandler::read_from_json(&self.path)?;
-        db_content.push(value);
+        let mut content: Vec<T> = JsonHandler::read_from_json(&self.path)?;
+        content.push(value);
 
-        JsonHandler::save_as_json(&self.path, &db_content)
+        JsonHandler::save_as_json(&self.path, &content)
     }
 
     pub fn query<T>(&self, key: &str) -> Result<T>
     where
-        T: Serialize + de::DeserializeOwned + GetKeyAttribute,
+        T: de::DeserializeOwned + GetKeyAttribute,
     {
-        let db_content: Vec<T> = JsonHandler::read_from_json(&self.path)?;
+        let content: Vec<T> = JsonHandler::read_from_json(&self.path)?;
 
-        if let Some(element) = db_content
+        if let Some(element) = content
             .into_iter()
             .find(|element| element.get_key_attribute() == key)
         {
@@ -53,11 +53,11 @@ impl Database {
 
     pub fn query_vec<T>(&self, key: &str) -> Result<Vec<T>>
     where
-        T: Serialize + de::DeserializeOwned + GetKeyAttribute,
+        T: de::DeserializeOwned + GetKeyAttribute,
     {
-        let db_content: Vec<T> = JsonHandler::read_from_json(&self.path)?;
+        let content: Vec<T> = JsonHandler::read_from_json(&self.path)?;
 
-        let result: Vec<T> = db_content
+        let result: Vec<T> = content
             .into_iter()
             .filter(|element| element.get_key_attribute() == key)
             .collect();
@@ -69,19 +69,26 @@ impl Database {
         Err(anyhow!("Element not found"))
     }
 
+    pub fn query_all<T>(&self) -> Result<Vec<T>>
+    where
+        T: de::DeserializeOwned,
+    {
+        JsonHandler::read_from_json(&self.path)
+    }
+
     pub fn update<T>(&self, key: &str, new_element: T) -> Result<()>
     where
         T: Serialize + de::DeserializeOwned + GetKeyAttribute,
     {
-        let mut db_content: Vec<T> = JsonHandler::read_from_json(&self.path)?;
+        let mut content: Vec<T> = JsonHandler::read_from_json(&self.path)?;
 
-        if let Some(element) = db_content
+        if let Some(element) = content
             .iter_mut()
             .find(|element| element.get_key_attribute() == key)
         {
             *element = new_element;
 
-            JsonHandler::save_as_json(&self.path, &db_content)?;
+            JsonHandler::save_as_json(&self.path, &content)?;
         }
 
         Ok(())
@@ -91,15 +98,15 @@ impl Database {
     where
         T: Serialize + de::DeserializeOwned + GetKeyAttribute,
     {
-        let mut db_content: Vec<T> = JsonHandler::read_from_json(&self.path)?;
+        let mut content: Vec<T> = JsonHandler::read_from_json(&self.path)?;
 
-        if let Some(idx) = db_content
+        if let Some(idx) = content
             .iter()
             .position(|element| element.get_key_attribute() == key)
         {
-            let removed = db_content.swap_remove(idx);
+            let removed = content.swap_remove(idx);
 
-            JsonHandler::save_as_json(&self.path, &db_content)?;
+            JsonHandler::save_as_json(&self.path, &content)?;
 
             return Ok(removed);
         }
