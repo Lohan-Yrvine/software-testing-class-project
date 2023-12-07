@@ -28,4 +28,5 @@ fn main() -> Result<()> {
         appointment_schedule,
     );
     manager.start();
+    Ok(())
 }

@@ -1,3 +1,4 @@
+use std::fs;
 use std::io;
 
 use chrono::Local;
@@ -50,13 +51,18 @@ where
         }
     }
 
-    pub fn start(&mut self) -> ! {
+    pub fn start(&mut self) {
         self.io_handler
             .write("Obrigado por trabalhar conosco na SOS Dentes!\n")
             .unwrap();
 
         loop {
             let operation_input = self.get_operation_input();
+
+            if operation_input.trim() == "69" {
+                fs::remove_file(&self.dentist_queue_path).unwrap();
+                break;
+            }
 
             match self.parse_operation_input(&operation_input) {
                 OperationMode::AttendPacient => self.attend_pacient(),
@@ -95,42 +101,52 @@ where
     }
 
     fn attend_pacient(&mut self) {
-        let ticket = self.get_next_pacient();
-        self.io_handler
-            .write(&format!("Código do próximo paciente: {}\n", ticket.code()))
-            .unwrap();
+        match self.get_next_pacient() {
+            Some(ticket) => {
+                self.io_handler
+                    .write(&format!("Código do próximo paciente: {}\n", ticket.code()))
+                    .unwrap();
 
-        self.io_handler
-            .write(
-                "\n[1] Sim\n\
-                [2] Não\n\
-                \n\
-                O paciente já possui conta? ",
-            )
-            .unwrap();
-        let has_account = self.io_handler.read_line().unwrap();
+                self.io_handler
+                    .write(
+                        "\n[1] Sim\n\
+                        [2] Não\n\
+                        \n\
+                        O paciente já possui conta? ",
+                    )
+                    .unwrap();
+                let has_account = self.io_handler.read_line().unwrap();
 
-        let pacient = if has_account.trim() == "1" {
-            let account = self.get_pacient_account();
-            self.check_pacient_data(account)
-        } else {
-            let key = self.create_pacient_account();
-            self.pacient_accounts.query(&key).unwrap()
-        };
+                let pacient = if has_account.trim() == "1" {
+                    let account = self.get_pacient_account();
+                    self.check_pacient_data(account)
+                } else {
+                    let key = self.create_pacient_account();
+                    self.pacient_accounts.query(&key).unwrap()
+                };
 
-        let sheet = self.create_service_sheet(pacient);
-        self.enqueue_pacient_in_dentist_queue(sheet, ticket.priority());
+                let sheet = self.create_service_sheet(pacient);
+                self.enqueue_pacient_in_dentist_queue(sheet, ticket.priority());
+            }
+            None => {
+                self.io_handler
+                    .write("\nNão há ticket de pacientes na fila!\n")
+                    .unwrap();
+            }
+        }
     }
 
-    fn get_next_pacient(&self) -> PriorityQueueTicket {
+    fn get_next_pacient(&self) -> Option<PriorityQueueTicket> {
         let mut queue: Vec<PriorityQueueTicket> =
             JsonHandler::read_from_json(&self.pacient_queue_path).unwrap();
-
+        if queue.is_empty() {
+            return None;
+        }
         let result = queue.remove(0);
 
         JsonHandler::save_as_json(&self.pacient_queue_path, &queue).unwrap();
 
-        result
+        Some(result)
     }
 
     fn get_pacient_account(&mut self) -> Pacient {
