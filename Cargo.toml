@@ -6,8 +6,6 @@ members = [
     "pacient",
     "receptionist",
     "dentist",
-
-    "tests",
 ]
 
 [workspace.dependencies]
